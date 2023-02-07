@@ -7,7 +7,7 @@
 
 
 
-#define TotalPulse 1508
+#define TotalPulse 2688
 #define TotalDeg 360
 
 #include "utils.h"

@@ -93,11 +93,12 @@ uint32_t g_nCmdPulse;
 float g_dCmdVel;
 uint8_t hrhr = 0;
 
-uint32_t nPulse1;
-uint32_t nPulse2;
+uint32_t nPulse1, nPulse1_test;
+uint32_t nPulse2, nPulse2_test;
 
 PID_CONTROL_t tPID_1, tPID_2;
 PROFILE_t tProfile_1, tProfile_2;
+
 
 uint8_t tProcess;
 /* USER CODE END 0 */
@@ -109,10 +110,10 @@ uint8_t tProcess;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  PIDInit(&tPID_1, 1.0, 0.1, 0.1);
-  PIDInit(&tPID_2, 1.0, 0.1, 0.1);
-  MotorTrapzoidalInit(&tProfile1, 3600, 30, 10);
-  MotorTrapzoidalInit(&tProfile2, 3600, 30, 10);
+//  PIDInit(&tPID_1, 1.0, 0.1, 0.1);
+//  PIDInit(&tPID_2, 1.0, 0.1, 0.1);
+//  MotorTrapzoidalInit(&tProfile_1, 3600, 30, 10);
+//  MotorTrapzoidalInit(&tProfile_2, 3600, 30, 10);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -146,8 +147,8 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  //  MotorSetDuty(500, MOTOR_1);
-  //  MotorSetDuty(500, MOTOR_2);
+//    MotorSetDuty(500, MOTOR_1);
+//    MotorSetDuty(500, MOTOR_2);
   //
   //  MotorSetRun();
   while (1)
@@ -296,8 +297,8 @@ void MotorInit(void)
   HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_2);
 
   //  Motor1Fordward();
-  Motor1Backward();
-  Motor2Backward();
+  Motor1Forward();
+  Motor2Forward();
 
   MotorSetDuty(0, MOTOR_1);
   MotorSetDuty(0, MOTOR_2);
@@ -320,14 +321,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
   if (htim->Instance == htim2.Instance)
   {
-    switch (tProcess)
-    {
-    case NONE:
-      break;
-    case RUN_TEST:
-      MotorMovePos(tProfile_1, &tPID_1, MOTOR_1);
-      MotorMovePos(tProfile_2, &tPID_2, MOTOR_2);
-    }
+//    switch (tProcess)
+//    {
+//    case NONE:
+//      break;
+//    case RUN_TEST:
+//      MotorMovePos(tProfile_1, &tPID_1, MOTOR_1);
+//      MotorMovePos(tProfile_2, &tPID_2, MOTOR_2);
+//    }
+	  MotorGetPulse(&nPulse1_test, MOTOR_1);
+	  if (nPulse1_test < 2000){
+		  MotorSetDuty(500, MOTOR_1);
+	  } else {
+		  MotorSetDuty(0, MOTOR_1);
+	  }
+	  MotorGetPulse(&nPulse2_test, MOTOR_2);
   }
 }
 
