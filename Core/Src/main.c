@@ -21,9 +21,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include "motor.h"
-#include "pid.h"
-#include "utils.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
@@ -31,6 +29,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "pid.h"
+#include "utils.h"
+#include "motor.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -70,7 +71,7 @@ void Motor1Backward();
 void Mortor2Fordward();
 void Mortor2Backward();
 void MotorGetPulse(uint32_t *nPulse, uint8_t motor);
-void MotorMovePos(PROFILE_t tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor);
+void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor);
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -91,7 +92,6 @@ uint32_t g_nActPulse_2;
 
 uint32_t g_nCmdPulse;
 float g_dCmdVel;
-uint8_t hrhr = 0;
 
 uint32_t nPulse1, nPulse1_test;
 uint32_t nPulse2, nPulse2_test;
@@ -99,8 +99,9 @@ uint32_t nPulse2, nPulse2_test;
 PID_CONTROL_t tPID_1, tPID_2;
 PROFILE_t tProfile_1, tProfile_2;
 
-
 uint8_t tProcess;
+
+uint32_t g_nActPulse_1, g_nActPulse_2;
 /* USER CODE END 0 */
 
 /**
@@ -110,10 +111,14 @@ uint8_t tProcess;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-//  PIDInit(&tPID_1, 1.0, 0.1, 0.1);
-//  PIDInit(&tPID_2, 1.0, 0.1, 0.1);
-//  MotorTrapzoidalInit(&tProfile_1, 3600, 30, 10);
-//  MotorTrapzoidalInit(&tProfile_2, 3600, 30, 10);
+
+	//Go ahead
+//  MotorTrapzoidalInit(&tProfile_1, 1000, 90, 45);
+//  MotorTrapzoidalInit(&tProfile_2, 1000, 90, 45);
+
+	//Rotate left
+	MotorTrapzoidalInit(&tProfile_1, 360, 60, 10);
+//	MotorTrapzoidalInit(&tProfile_2, -0, 90, 45);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -140,15 +145,22 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM8_Init();
   MX_USART1_UART_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   SerialInit();
   MotorInit();
+
+  __HAL_TIM_SetCounter(&htim8, 32768);
+  __HAL_TIM_SetCounter(&htim1, 32768);
+  tProcess = RUN_TEST;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-//    MotorSetDuty(500, MOTOR_1);
-//    MotorSetDuty(500, MOTOR_2);
+
+//      MotorSetDuty(500, MOTOR_1);
+//      MotorSetDuty(500, MOTOR_2);
   //
   //  MotorSetRun();
   while (1)
@@ -290,15 +302,16 @@ void MotorInit(void)
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);
 
-  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1);
+  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_2);
 
   HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_1);
   HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_2);
-
+  PIDInit(&tPID_1, 3.5, 1.5, 0.2);
+  PIDInit(&tPID_2, 3.5, 1.5, 0.2);
   //  Motor1Fordward();
-  Motor1Forward();
-  Motor2Forward();
+  //  Motor1Forward();
+  //  Motor2Forward();
 
   MotorSetDuty(0, MOTOR_1);
   MotorSetDuty(0, MOTOR_2);
@@ -308,11 +321,11 @@ void MotorGetPulse(uint32_t *nPulse, uint8_t motor)
 {
   if (motor == MOTOR_1)
   {
-    *nPulse = __HAL_TIM_GetCounter(&htim4);
+    *nPulse = __HAL_TIM_GetCounter(&htim8);
   }
   else if (motor == MOTOR_2)
   {
-    *nPulse = __HAL_TIM_GetCounter(&htim8);
+    *nPulse = __HAL_TIM_GetCounter(&htim1);
   }
 }
 
@@ -321,60 +334,77 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
   if (htim->Instance == htim2.Instance)
   {
-//    switch (tProcess)
-//    {
-//    case NONE:
-//      break;
-//    case RUN_TEST:
-//      MotorMovePos(tProfile_1, &tPID_1, MOTOR_1);
-//      MotorMovePos(tProfile_2, &tPID_2, MOTOR_2);
-//    }
-	  MotorGetPulse(&nPulse1_test, MOTOR_1);
-	  if (nPulse1_test < 2000){
-		  MotorSetDuty(500, MOTOR_1);
-	  } else {
-		  MotorSetDuty(0, MOTOR_1);
-	  }
-	  MotorGetPulse(&nPulse2_test, MOTOR_2);
+    switch (tProcess)
+    {
+    case NONE:
+      break;
+    case RUN_TEST:
+      MotorMovePos(&tProfile_1, &tPID_1, MOTOR_1);
+//      MotorMovePos(&tProfile_2, &tPID_2, MOTOR_2);
+    }
+    //    MotorGetPulse(&nPulse1_test, MOTOR_1);
+    //    if (nPulse1_test < 10752)
+    //    {
+    //      MotorSetDuty(500, MOTOR_1);
+    //    }
+    //    else
+    //    {
+    //      MotorSetDuty(0, MOTOR_1);
+    //    }
+    //
+    //    MotorGetPulse(&nPulse2_test, MOTOR_2);
+    ////	  nPulse2_test = TIM8 -> CNT;
+    //    if (nPulse2_test < 10752)
+    //    {
+    //      MotorSetDuty(500, MOTOR_2);
+    //    }
+    //    else
+    //    {
+    //      MotorSetDuty(0, MOTOR_2);
+    //    }
   }
 }
 
-void MotorMovePos(PROFILE_t tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor)
+void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor)
 {
   int32_t g_nDutyCycle;
   uint32_t g_nActPulse;
   if (motor == MOTOR_1)
   {
-    MotorGetPulse(&nPulse1, motor); // get encoder counter
-    g_nActPulse = nPulse1 - 32768;
+    //    MotorGetPulse(&nPulse1, motor); // get encoder counter
+    nPulse1 = __HAL_TIM_GetCounter(&htim8);
+    //	nPulse1 = TIM8->CNT;
+    g_nActPulse_1 = nPulse1 - 32768;
+    g_nActPulse = g_nActPulse_1;
   }
   else
   {
     MotorGetPulse(&nPulse2, motor); // get encoder counter
-    g_nActPulse = nPulse2 - 32768;
+    g_nActPulse_2 = nPulse2 - 32768;
+    g_nActPulse = g_nActPulse_2;
   }
 
   float dPosTemp = 0;
 
   // Profile trapezoidal Speed
-  if (tProfile.nTime <= tProfile.dMidStep1)
+  if (tProfile->nTime <= tProfile->dMidStep1)
   {
-    dPosTemp = (int32_t)(tProfile.dA1 * tProfile.nTime * tProfile.nTime);
-    g_dCmdVel = 2 * tProfile.dA1 * tProfile.nTime;
+    dPosTemp = (int32_t)(tProfile->dA1 * tProfile->nTime * tProfile->nTime);
+    g_dCmdVel = 2 * tProfile->dA1 * tProfile->nTime;
   }
-  else if (tProfile.nTime <= tProfile.dMidStep2)
+  else if (tProfile->nTime <= tProfile->dMidStep2)
   {
-    dPosTemp = (int32_t)(tProfile.dA2 * tProfile.nTime + tProfile.dB2);
-    g_dCmdVel = tProfile.dA2;
+    dPosTemp = (int32_t)(tProfile->dA2 * tProfile->nTime + tProfile->dB2);
+    g_dCmdVel = tProfile->dA2;
   }
-  else if (tProfile.nTime <= tProfile.dMidStep3)
+  else if (tProfile->nTime <= tProfile->dMidStep3)
   {
-    dPosTemp = (int32_t)(tProfile.dA3 * tProfile.nTime * tProfile.nTime + tProfile.dB3 * tProfile.nTime + tProfile.dC3);
-    g_dCmdVel = 2 * tProfile.dA3 * tProfile.nTime + tProfile.dB3;
+    dPosTemp = (int32_t)(tProfile->dA3 * tProfile->nTime * tProfile->nTime + tProfile->dB3 * tProfile->nTime + tProfile->dC3);
+    g_dCmdVel = 2 * tProfile->dA3 * tProfile->nTime + tProfile->dB3;
   }
   else
   {
-    dPosTemp = tProfile.dPosMax;
+    dPosTemp = tProfile->dPosMax;
   }
 
   // Control PID
@@ -382,29 +412,44 @@ void MotorMovePos(PROFILE_t tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor)
   g_nDutyCycle = (int16_t)PIDCompute(tPIDControl, g_nCmdPulse, g_nActPulse, SAMPLING_TIME);
   if (g_nDutyCycle >= 0)
   {
-    Motor1Forward();
-    Motor2Forward();
+    if (motor == MOTOR_1)
+    {
+      Motor1Forward();
+    }
+    else
+    {
+      Motor2Forward();
+    }
+
     MotorSetDuty(abs(g_nDutyCycle), motor);
   }
   else if (g_nDutyCycle < 0)
   {
-    Motor1Backward();
-    Motor2Backward();
+
+    if (motor == MOTOR_1)
+    {
+      Motor1Backward();
+    }
+    else
+    {
+      Motor2Backward();
+    }
+
     MotorSetDuty(abs(g_nDutyCycle), motor);
   }
 
-  if (tProfile.nTime > tProfile.dMidStep3)
+  if (tProfile->nTime > tProfile->dMidStep3)
   {
     __HAL_TIM_SetCounter(&htim4, 32768);
     dPosTemp = 0;
     g_nDutyCycle = 0;
     g_dCmdVel = 0;
-    tProfile.nTime = 0;
+    tProfile->nTime = 0;
     tProcess = NONE;
     MotorSetDuty(abs(g_nDutyCycle), motor);
   }
 
-  tProfile.nTime += SAMPLING_TIME;
+  tProfile->nTime += SAMPLING_TIME;
 }
 
 /* USER CODE END 4 */

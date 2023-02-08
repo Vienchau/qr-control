@@ -25,7 +25,7 @@ void PIDInit(PID_CONTROL_t *PID_Ctrl, float dKp, float dKi, float dKd)
     PID_Ctrl->dKp = dKp;
     PID_Ctrl->dKi = dKi;
     PID_Ctrl->dKd = dKd;
-    __HAL_TIM_SetCounter(&htim4, 32768);
+
 }
 
 // set new PID params

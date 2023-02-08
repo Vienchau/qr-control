@@ -60,8 +60,8 @@ all: main-build
 main-build: Qr-Control.elf secondary-outputs
 
 # Tool invocations
-Qr-Control.elf Qr-Control.map: $(OBJS) $(USER_OBJS) /home/vienchau/workspace/stm32/qrCode_thesis/Qr-Control/STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Qr-Control.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/vienchau/workspace/stm32/qrCode_thesis/Qr-Control/STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Qr-Control.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Qr-Control.elf Qr-Control.map: $(OBJS) $(USER_OBJS) /home/vienchau/Desktop/workspace/thesis/Qr-Control/STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Qr-Control.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/home/vienchau/Desktop/workspace/thesis/Qr-Control/STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Qr-Control.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

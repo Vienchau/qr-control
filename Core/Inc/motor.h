@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+
+
 typedef struct
 {
     float dAccelMax;
@@ -22,6 +24,7 @@ typedef struct
     float dMidStep2;
     float dMidStep3;
     float nTime;
+//    uint8_t Direct;
 } PROFILE_t;
 
 enum
