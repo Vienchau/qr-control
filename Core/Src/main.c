@@ -112,13 +112,13 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
-	//Go ahead
-//  MotorTrapzoidalInit(&tProfile_1, 1000, 90, 45);
-//  MotorTrapzoidalInit(&tProfile_2, 1000, 90, 45);
+  // Go ahead
+  //  MotorTrapzoidalInit(&tProfile_1, 1000, 90, 45);
+  //  MotorTrapzoidalInit(&tProfile_2, 1000, 90, 45);
 
-	//Rotate left
-	MotorTrapzoidalInit(&tProfile_1, 360, 60, 10);
-//	MotorTrapzoidalInit(&tProfile_2, -0, 90, 45);
+  // Rotate left
+  MotorTrapzoidalInit(&tProfile_1, 360, 60, 10);
+  	MotorTrapzoidalInit(&tProfile_2, 360, 60, 10);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -159,8 +159,8 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-//      MotorSetDuty(500, MOTOR_1);
-//      MotorSetDuty(500, MOTOR_2);
+  //      MotorSetDuty(500, MOTOR_1);
+  //      MotorSetDuty(500, MOTOR_2);
   //
   //  MotorSetRun();
   while (1)
@@ -340,7 +340,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       break;
     case RUN_TEST:
       MotorMovePos(&tProfile_1, &tPID_1, MOTOR_1);
-//      MotorMovePos(&tProfile_2, &tPID_2, MOTOR_2);
+            MotorMovePos(&tProfile_2, &tPID_2, MOTOR_2);
     }
     //    MotorGetPulse(&nPulse1_test, MOTOR_1);
     //    if (nPulse1_test < 10752)
@@ -371,9 +371,8 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor
   uint32_t g_nActPulse;
   if (motor == MOTOR_1)
   {
-    //    MotorGetPulse(&nPulse1, motor); // get encoder counter
-    nPulse1 = __HAL_TIM_GetCounter(&htim8);
-    //	nPulse1 = TIM8->CNT;
+	MotorGetPulse(&nPulse1, motor); // get encoder counter
+
     g_nActPulse_1 = nPulse1 - 32768;
     g_nActPulse = g_nActPulse_1;
   }
