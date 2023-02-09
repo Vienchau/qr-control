@@ -11,6 +11,11 @@
 #include <stdint.h>
 
 
+#define TotalPulse 10752
+#define TotalDeg 360
+
+#define HEAD 1
+#define BACK 0
 
 typedef struct
 {
@@ -24,7 +29,7 @@ typedef struct
     float dMidStep2;
     float dMidStep3;
     float nTime;
-//    uint8_t Direct;
+    uint8_t Direct;
 } PROFILE_t;
 
 enum
@@ -33,5 +38,5 @@ enum
     RUN_TEST
 };
 
-void MotorTrapzoidalInit(PROFILE_t *tProfile, float maxPos, float maxVel, float maxAcc);
+void MotorTrapzoidalInit(PROFILE_t *tProfile, float maxPos, float maxVel, float maxAcc, uint8_t direct);
 #endif /* INC_MOTOR_H_ */

@@ -7,11 +7,9 @@
 
 
 
-#define TotalPulse 10752
-
-#define TotalDeg 360
 
 #include "utils.h"
+#include "motor.h"
 
 uint16_t ConvertDegToPulse(uint16_t nDeg)
 {

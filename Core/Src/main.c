@@ -117,8 +117,8 @@ int main(void)
   //  MotorTrapzoidalInit(&tProfile_2, 1000, 90, 45);
 
   // Rotate left
-  MotorTrapzoidalInit(&tProfile_1, 360, 60, 10);
-  	MotorTrapzoidalInit(&tProfile_2, 360, 60, 10);
+  MotorTrapzoidalInit(&tProfile_1, 360, 60, 10, BACK);
+  MotorTrapzoidalInit(&tProfile_2, 360, 60, 10, BACK);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -340,7 +340,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       break;
     case RUN_TEST:
       MotorMovePos(&tProfile_1, &tPID_1, MOTOR_1);
-            MotorMovePos(&tProfile_2, &tPID_2, MOTOR_2);
+      MotorMovePos(&tProfile_2, &tPID_2, MOTOR_2);
     }
     //    MotorGetPulse(&nPulse1_test, MOTOR_1);
     //    if (nPulse1_test < 10752)
@@ -371,15 +371,28 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor
   uint32_t g_nActPulse;
   if (motor == MOTOR_1)
   {
-	MotorGetPulse(&nPulse1, motor); // get encoder counter
-
-    g_nActPulse_1 = nPulse1 - 32768;
+    MotorGetPulse(&nPulse1, motor); // get encoder counter
+    if (tProfile->Direct == HEAD)
+    {
+      g_nActPulse_1 = nPulse1 - 32768;
+    }
+    else
+    {
+      g_nActPulse_1 = 32768 - nPulse1;
+    }
     g_nActPulse = g_nActPulse_1;
   }
   else
   {
     MotorGetPulse(&nPulse2, motor); // get encoder counter
-    g_nActPulse_2 = nPulse2 - 32768;
+    if (tProfile->Direct == HEAD)
+    {
+      g_nActPulse_2 = nPulse2 - 32768;
+    }
+    else
+    {
+      g_nActPulse_2 = 32768 - nPulse2;
+    }
     g_nActPulse = g_nActPulse_2;
   }
 
@@ -413,25 +426,52 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor
   {
     if (motor == MOTOR_1)
     {
-      Motor1Forward();
+      if (tProfile->Direct == HEAD)
+      {
+        Motor1Forward();
+      }
+      else
+      {
+        Motor1Backward();
+      }
     }
     else
     {
-      Motor2Forward();
+      if (tProfile->Direct == HEAD)
+      {
+        Motor2Forward();
+      }
+      else
+      {
+        Motor2Backward();
+      }
     }
 
     MotorSetDuty(abs(g_nDutyCycle), motor);
   }
   else if (g_nDutyCycle < 0)
   {
-
     if (motor == MOTOR_1)
     {
-      Motor1Backward();
+      if (tProfile->Direct == HEAD)
+      {
+        Motor1Backward();
+      }
+      else
+      {
+        Motor1Forward();
+      }
     }
     else
     {
-      Motor2Backward();
+      if (tProfile->Direct == HEAD)
+      {
+        Motor2Backward();
+      }
+      else
+      {
+        Motor2Forward();
+      }
     }
 
     MotorSetDuty(abs(g_nDutyCycle), motor);
@@ -439,7 +479,8 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor
 
   if (tProfile->nTime > tProfile->dMidStep3)
   {
-    __HAL_TIM_SetCounter(&htim4, 32768);
+    __HAL_TIM_SetCounter(&htim1, 32768);
+    __HAL_TIM_SetCounter(&htim8, 32768);
     dPosTemp = 0;
     g_nDutyCycle = 0;
     g_dCmdVel = 0;
@@ -447,7 +488,6 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor
     tProcess = NONE;
     MotorSetDuty(abs(g_nDutyCycle), motor);
   }
-
   tProfile->nTime += SAMPLING_TIME;
 }
 

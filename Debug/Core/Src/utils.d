@@ -1,2 +1,4 @@
-Core/Src/utils.o: ../Core/Src/utils.c ../Core/Inc/utils.h
+Core/Src/utils.o: ../Core/Src/utils.c ../Core/Inc/utils.h \
+ ../Core/Inc/motor.h
 ../Core/Inc/utils.h:
+../Core/Inc/motor.h:
