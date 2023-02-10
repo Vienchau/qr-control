@@ -55,9 +55,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-#define SAMPLE_STRING "0000"
-#define MAX_LEN_DATA 5
-
+#define SAMPLE_STRING "0360,0045,0045,1,0360,0045,0045,0"
+#define MAX_LEN_DATA 33
 void SerialInit(void);
 void SerialAcceptReceive(void);
 void SerialWriteComm();
@@ -102,12 +101,18 @@ PROFILE_t tProfile_1, tProfile_2;
 uint8_t tProcess;
 
 uint32_t g_nActPulse_1, g_nActPulse_2;
+char data[] = "HELLO WORLD \r\n";
+
+//void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+//{
+//   HAL_UART_Transmit_IT(&huart2, data, sizeof(data));
+//}
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -119,6 +124,7 @@ int main(void)
   // Rotate left
   MotorTrapzoidalInit(&tProfile_1, 360, 60, 10, BACK);
   MotorTrapzoidalInit(&tProfile_2, 360, 60, 10, BACK);
+//char hehe[] = "hello";
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -146,6 +152,7 @@ int main(void)
   MX_TIM8_Init();
   MX_USART1_UART_Init();
   MX_TIM1_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   SerialInit();
   MotorInit();
@@ -153,6 +160,7 @@ int main(void)
   __HAL_TIM_SetCounter(&htim8, 32768);
   __HAL_TIM_SetCounter(&htim1, 32768);
   tProcess = RUN_TEST;
+
 
   /* USER CODE END 2 */
 
@@ -163,10 +171,19 @@ int main(void)
   //      MotorSetDuty(500, MOTOR_2);
   //
   //  MotorSetRun();
+  // HAL_UART_Transmit_IT(&huart2, (uint8_t*)data, sizeof(data));
   while (1)
   {
 
     //	  MotorSetDuty(200, MOTOR_2);
+
+//	  HAL_UART_Transmit(&huart2, (uint8_t*)data, sizeof(data), 1000);
+//	  HAL_UART_Transmit(&huart1, data, sizeof(data));
+//	  HAL_UART_Transmit(&huart1, (uint8_t *)data, sizeof(data), 1000);
+//	  HAL_Delay(1000);
+   // HAL_UART_Transmit(&huart1, (uint8_t *)'a', 1, 1000);
+
+//	  HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 
@@ -176,22 +193,22 @@ int main(void)
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-   */
+  */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -206,8 +223,9 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -222,21 +240,25 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void SerialInit(void)
 {
-  HAL_UART_Receive_IT(&huart1, (uint8_t *)dataBuffer, MAX_LEN_DATA);
+  HAL_UART_Receive_IT(&huart2, (uint8_t *)dataBuffer, MAX_LEN_DATA);
 }
 
 // receive data
 void SerialAcceptReceive(void)
 {
-  HAL_UART_Receive_IT(&huart1, (uint8_t *)dataBuffer, MAX_LEN_DATA);
+  HAL_UART_Receive_IT(&huart2, (uint8_t *)dataBuffer, MAX_LEN_DATA);
 }
 
 // interupt uart RX
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if (huart->Instance == huart1.Instance)
+  if (huart->Instance == huart2.Instance)
   {
-    SerialAcceptReceive();
+    	 HAL_UART_Transmit(&huart2, (uint8_t*)dataBuffer, MAX_LEN_DATA, 1000);
+    //	SerialWriteComm();
+    	  SerialAcceptReceive();
+    //    SerialWriteComm();
+    //
   }
 }
 
@@ -244,11 +266,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 void SerialWriteComm()
 {
-  char *pBuff;
-  pBuff = (char *)malloc(MAX_LEN_DATA);
-  strncpy(pBuff, dataBuffer, MAX_LEN_DATA);
-  HAL_UART_Transmit(&huart1, (uint8_t *)pBuff, MAX_LEN_DATA, 1000);
-  free(pBuff);
+  //HAL_UART_Transmit(&huart1, (uint8_t *)'hehe', 4, 1000);
 }
 
 // set (-) pwm
@@ -309,9 +327,6 @@ void MotorInit(void)
   HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_2);
   PIDInit(&tPID_1, 3.5, 1.5, 0.2);
   PIDInit(&tPID_2, 3.5, 1.5, 0.2);
-  //  Motor1Fordward();
-  //  Motor1Forward();
-  //  Motor2Forward();
 
   MotorSetDuty(0, MOTOR_1);
   MotorSetDuty(0, MOTOR_2);
@@ -342,26 +357,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       MotorMovePos(&tProfile_1, &tPID_1, MOTOR_1);
       MotorMovePos(&tProfile_2, &tPID_2, MOTOR_2);
     }
-    //    MotorGetPulse(&nPulse1_test, MOTOR_1);
-    //    if (nPulse1_test < 10752)
-    //    {
-    //      MotorSetDuty(500, MOTOR_1);
-    //    }
-    //    else
-    //    {
-    //      MotorSetDuty(0, MOTOR_1);
-    //    }
-    //
-    //    MotorGetPulse(&nPulse2_test, MOTOR_2);
-    ////	  nPulse2_test = TIM8 -> CNT;
-    //    if (nPulse2_test < 10752)
-    //    {
-    //      MotorSetDuty(500, MOTOR_2);
-    //    }
-    //    else
-    //    {
-    //      MotorSetDuty(0, MOTOR_2);
-    //    }
   }
 }
 
@@ -494,9 +489,9 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -508,14 +503,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
