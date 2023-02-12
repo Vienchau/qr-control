@@ -39,11 +39,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_macro  00021ab9  00000000  00000000  000330e0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   00010337  00000000  00000000  00054b99  2**0
+ 18 .debug_line   00010335  00000000  00000000  00054b99  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000cb28f  00000000  00000000  00064ed0  2**0
+ 19 .debug_str    000cb28f  00000000  00000000  00064ece  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000050  00000000  00000000  0013015f  2**0
+ 20 .comment      00000050  00000000  00000000  0013015d  2**0
                   CONTENTS, READONLY
  21 .debug_frame  000037f4  00000000  00000000  001301b0  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -1201,11 +1201,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
  8000bfe:	4906      	ldr	r1, [pc, #24]	; (8000c18 <HAL_UART_RxCpltCallback+0x34>)
  8000c00:	4804      	ldr	r0, [pc, #16]	; (8000c14 <HAL_UART_RxCpltCallback+0x30>)
  8000c02:	f003 fbac 	bl	800435e <HAL_UART_Transmit>
-    //	SerialWriteComm();
-    	  SerialAcceptReceive();
+    	 SerialAcceptReceive();
  8000c06:	f7ff ffdf 	bl	8000bc8 <SerialAcceptReceive>
-    //    SerialWriteComm();
-    //
   }
 }
  8000c0a:	bf00      	nop

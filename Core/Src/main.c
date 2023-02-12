@@ -255,10 +255,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   if (huart->Instance == huart2.Instance)
   {
     	 HAL_UART_Transmit(&huart2, (uint8_t*)dataBuffer, MAX_LEN_DATA, 1000);
-    //	SerialWriteComm();
-    	  SerialAcceptReceive();
-    //    SerialWriteComm();
-    //
+    	 SerialAcceptReceive();
   }
 }
 
