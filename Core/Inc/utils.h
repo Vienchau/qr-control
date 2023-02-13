@@ -23,9 +23,6 @@ typedef struct ArrayData
     uint16_t vel1;
     uint16_t acc1;
     uint16_t dir1;
-    uint16_t pos2;
-    uint16_t vel2;
-    uint16_t acc2;
     uint16_t dir2;
 } ArrData_t;
 

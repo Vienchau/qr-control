@@ -29,7 +29,7 @@ typedef struct
     float dMidStep2;
     float dMidStep3;
     float nTime;
-    uint8_t Direct;
+//    uint8_t Direct;
 } PROFILE_t;
 
 enum
@@ -38,5 +38,5 @@ enum
     RUN_TEST
 };
 
-void MotorTrapzoidalInit(PROFILE_t *tProfile, float maxPos, float maxVel, float maxAcc, uint8_t direct);
+void MotorTrapzoidalInit(PROFILE_t *tProfile, float maxPos, float maxVel, float maxAcc);
 #endif /* INC_MOTOR_H_ */

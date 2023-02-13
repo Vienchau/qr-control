@@ -7,7 +7,7 @@
 
 #include "motor.h"
 
-void MotorTrapzoidalInit(PROFILE_t *tProfile, float maxPos, float maxVel, float maxAcc, uint8_t direct)
+void MotorTrapzoidalInit(PROFILE_t *tProfile, float maxPos, float maxVel, float maxAcc)
 {
 	tProfile->dAccelMax = maxAcc;
 	tProfile->dVelMax = maxVel;
@@ -23,6 +23,6 @@ void MotorTrapzoidalInit(PROFILE_t *tProfile, float maxPos, float maxVel, float 
 	tProfile->dMidStep1 = tProfile->dVelMax / tProfile->dAccelMax;
 	tProfile->dMidStep2 = tProfile->dPosMax / tProfile->dVelMax;
 	tProfile->dMidStep3 = tProfile->dMidStep1 + tProfile->dMidStep2;
-	tProfile->Direct = direct;
+//	tProfile->Direct = direct;
 	tProfile->nTime = 0;
 }
