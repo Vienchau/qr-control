@@ -17,4 +17,18 @@ uint16_t ConvertDegToPulse(uint16_t nDeg);
 
 uint16_t ConvertPulseToDeg(uint16_t nPulse);
 
+typedef struct ArrayData
+{
+    uint16_t pos1;
+    uint16_t vel1;
+    uint16_t acc1;
+    uint16_t dir1;
+    uint16_t pos2;
+    uint16_t vel2;
+    uint16_t acc2;
+    uint16_t dir2;
+} ArrData_t;
+
+ArrData_t ArrProcess(char *arr);
+
 #endif /* INC_UTILS_H_ */

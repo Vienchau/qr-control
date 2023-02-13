@@ -24,4 +24,5 @@ void MotorTrapzoidalInit(PROFILE_t *tProfile, float maxPos, float maxVel, float 
 	tProfile->dMidStep2 = tProfile->dPosMax / tProfile->dVelMax;
 	tProfile->dMidStep3 = tProfile->dMidStep1 + tProfile->dMidStep2;
 	tProfile->Direct = direct;
+	tProfile->nTime = 0;
 }

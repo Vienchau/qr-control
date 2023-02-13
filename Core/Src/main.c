@@ -101,7 +101,7 @@ PROFILE_t tProfile_1, tProfile_2;
 uint8_t tProcess;
 
 uint32_t g_nActPulse_1, g_nActPulse_2;
-char data[] = "HELLO WORLD \r\n";
+char statusOK[] = "OK\r\n";
 
 //void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 //{
@@ -122,8 +122,8 @@ int main(void)
   //  MotorTrapzoidalInit(&tProfile_2, 1000, 90, 45);
 
   // Rotate left
-  MotorTrapzoidalInit(&tProfile_1, 360, 60, 10, BACK);
-  MotorTrapzoidalInit(&tProfile_2, 360, 60, 10, BACK);
+//  MotorTrapzoidalInit(&tProfile_1, 360, 60, 10, BACK);
+//  MotorTrapzoidalInit(&tProfile_2, 360, 60, 10, BACK);
 //char hehe[] = "hello";
   /* USER CODE END 1 */
 
@@ -147,10 +147,8 @@ int main(void)
   MX_GPIO_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
-  MX_TIM4_Init();
   MX_TIM5_Init();
   MX_TIM8_Init();
-  MX_USART1_UART_Init();
   MX_TIM1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
@@ -159,7 +157,7 @@ int main(void)
 
   __HAL_TIM_SetCounter(&htim8, 32768);
   __HAL_TIM_SetCounter(&htim1, 32768);
-  tProcess = RUN_TEST;
+  tProcess = NONE;
 
 
   /* USER CODE END 2 */
@@ -254,7 +252,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == huart2.Instance)
   {
+//	  MotorSetDuty(0, MOTOR_2);
+//	  MotorSetDuty(0, MOTOR_1);
+
     	 HAL_UART_Transmit(&huart2, (uint8_t*)dataBuffer, MAX_LEN_DATA, 1000);
+    	 ArrData_t arrData1;
+    	 arrData1 = ArrProcess(dataBuffer);
+    	 MotorTrapzoidalInit(&tProfile_1, arrData1.pos1, arrData1.vel1, arrData1.acc1, arrData1.dir1);
+    	 MotorTrapzoidalInit(&tProfile_2,  arrData1.pos2, arrData1.vel2, arrData1.acc2, arrData1.dir2);
+    	 tProcess = RUN_TEST;
     	 SerialAcceptReceive();
   }
 }
@@ -341,6 +347,7 @@ void MotorGetPulse(uint32_t *nPulse, uint8_t motor)
   }
 }
 
+/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 
@@ -478,7 +485,10 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl, uint8_t motor
     g_dCmdVel = 0;
     tProfile->nTime = 0;
     tProcess = NONE;
-    MotorSetDuty(abs(g_nDutyCycle), motor);
+    MotorSetDuty(0, motor);
+    PIDReset(&tPID_2);
+    PIDReset(&tPID_1);
+    HAL_UART_Transmit(&huart2, (uint8_t*)statusOK, sizeof(statusOK), 1000);
   }
   tProfile->nTime += SAMPLING_TIME;
 }
