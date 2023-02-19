@@ -6,7 +6,8 @@ from pyzbar.pyzbar import decode
 import time
 import AiPhile
 
-from math import atan2, pi
+
+from math import atan2, pi, ceil
 
 # QR code detector function 
 # def detectQRcode(image):
@@ -41,7 +42,7 @@ def get_angle(qrcode):
 #click = False
 #points =()
 ################### Rapoo Camera 
-cap = cv.VideoCapture(2)
+cap = cv.VideoCapture(-1)
 _, frame = cap.read()
 old_gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
 
@@ -60,8 +61,16 @@ frame_counter = 0
 starting_time = time.time()
 # keep looping until the 'q' key is pressed
 
+counter = 0 
+pre_text = None 
+pre_angle = 360
+flag = None
+flag2 = 1 # flag check VDK and Raspberry Pi 4
+tmp = None
+count_send = 0
+
 while 1: 
-   
+    counter += 1
     frame_counter += 1
     ret, frame = cap.read()
     
@@ -76,59 +85,85 @@ while 1:
     barcodes = decode(frame) 
 
 
-
     flag = 1 # default flag
-    xi = 253
-    yi = 204 
-    wi = 110  
-    hi = 110 
+    # xo2 = 90
+    # yo2 = 37 
+    # wo2 = 450  
+    # ho2 = 450 
 
-    xo = 200 
-    yo = 150
-    wo = 200 
-    ho = 200
+    xo = 240 
+    yo = 187
+    wo = 180 
+    ho = 180
 
     x_g = 0
     y_g = 0
     w_g = 639 
     h_g = 479
 
-    cv.rectangle(frame, (x_g, y_g), (x_g + w_g, y_g + h_g), (0, 255, 0), 2)
+    # cv.rectangle(frame, (x_g, y_g), (x_g + w_g, y_g + h_g), (0, 255, 0), 1)
     # cv.rectangle(frame, (xi, yi), (xi + wi, yi + hi), (0, 0, 255), 2)
-    cv.rectangle(frame, (xo, yo), (xo + wo, yo + ho), (255, 0, 0), 2)
+    # cv.rectangle(frame, (xo, yo), (xo + wo, yo + ho), (255, 0, 0), 1)
+    
+    #### vertical line ###
+    cv.line(frame, (213, 0), (213, 479), (0, 255, 255), 1)
+    cv.line(frame, (426, 0), (426, 479), (0, 255, 255), 1)
+    ### horizontal line ### 
+    cv.line(frame, (0, 159), (639, 159), (0, 255, 255), 1)
+    cv.line(frame, (0, 318), (639, 318), (0, 255, 255), 1)
+
+    # cv.rectangle(frame, (xo2, yo2), (xo2 + wo2, yo2 + ho2), (0, 255, 255), 1)
     # cv.rectangle(frame, (x1 - 100, y1 - 100), (x1 + w1 + 200, y1 + h1 + 200), (0, 255, 0), 2)
-    for barcode in barcodes: 
-        (x, y, w, h) = barcode.rect
-        cv.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 2)
-        """ 
-        roi: region of interest
-        x' = 
-        y' = 
-        w' = 
-        h' = 
-        (x', y') & (x' + w', y' + h')
-        """
+
+    
+    if flag2 == 0:
+        pass
+        # do function get flag2 from VDK
+
+    elif flag2 == 1:
+        for barcode in barcodes: 
+            (x, y, w, h) = barcode.rect
+            # cv.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 2)
+            """ 
+            roi: region of interest
+            x' = 
+            y' = 
+            w' = 
+            h' = 
+            (x', y') & (x' + w', y' + h')
+            """
 
 
-        barcodeData = barcode.data.decode("utf-8") 
-        barcodeType = barcode.type
-        # print(barcode.polygon)
-        
-        p1_x = barcode.polygon[0].x
-        p1_y = barcode.polygon[0].y
-        
-        p2_x = barcode.polygon[1].x 
-        p2_y = barcode.polygon[1].y
+            barcodeData = barcode.data.decode("utf-8") 
+            barcodeType = barcode.type
+            
 
-        p3_x = barcode.polygon[2].x 
-        p3_y = barcode.polygon[2].y
+            # this block fixes bug "IndexError: list index out of range"
+            if len(barcode.polygon) != 4: 
+                pass 
+            else:
+                p1_x = barcode.polygon[0].x
+                p1_y = barcode.polygon[0].y
+                
+                p2_x = barcode.polygon[1].x 
+                p2_y = barcode.polygon[1].y
 
-        p4_x = barcode.polygon[3].x 
-        p4_y = barcode.polygon[3].y
+                p3_x = barcode.polygon[2].x 
+                p3_y = barcode.polygon[2].y
+
+                p4_x = barcode.polygon[3].x 
+                p4_y = barcode.polygon[3].y
+
+            
+            # print(barcode.polygon)
 
 
-        if (p1_x >= xo and p1_y >= yo) and (p2_x <= xo + wo and p2_y >= yo) and (p3_x >= xo and p3_y <= yo+ho) and (p4_x <= xo+wo and p4_y <= yo+hols'):
-
+            
+            # if (p1_x >= xo2 and p1_y >= yo2) and (p2_x <= xo2 + wo2 and p2_y >= yo2) and (p3_x >= xo2 and p3_y <= yo2+ho2) and (p4_x <= xo2+wo2 and p4_y <= yo2+ho2):
+            angle_revise = atan2(p2_y - p1_y, p2_x - p1_x)
+            angle_revise = angle_revise * 180 / pi
+            
+            print(angle_revise)
             (rv, points, straight_qrcode) = cv.QRCodeDetector().detectAndDecode(frame)
             #print(points)
             if rv:
@@ -140,21 +175,52 @@ while 1:
                 pt4 = points[3]
 
 
-                a = pt2[1]
-                b = pt1[1]
+                a = int(pt2[1])
+                b = int(pt1[1])
 
-                c = pt2[0]
-                d = pt1[0]
+                c = int(pt2[0])
+                d = int(pt1[0])
 
-                angle_2 = atan2(a - b, c - d)
-                angle_2  = angle_2*180/pi
-                text = "\"[{}] [{}] [{}]\"".format(barcodeData, angle_2, flag, barcodeType) 
+                
+                angle = atan2(a - b, c - d)
+                angle = (angle * 180 / pi)
+                angle = int(angle)
+
+                # text = "\"[{}] [{}] [{}]\"".format(barcodeData, angle, flag, barcodeType)
+                count_send += 1
+                # print(points)
+                # print(angle)
+                # print(text)
+                # print("QR is not fit in roi")
+                angle_revise = atan2(p2_y - p1_y, p2_x - p1_x)
+                # angle_revise = angle_revise * 180 / pi
+                
+                text = "{}, {}".format(angle, angle_revise, barcodeType)
+                print(angle)
+#                 if (p1_x >= xo and p1_y <= yo + ho) and (p2_x <= xo + wo and p2_y <= yo + ho) and (p3_x <= xo + wo and p3_y >= yo) and (p4_x >= xo and p4_y >= yo):
+#                     
+#                     if pre_text == text:
+#                         flag = 0
+#                     else: 
+#                         flag = 1 
+#                     if flag: 
+#                         print(text)
+#                         print("uart_send") # do function uart_send()
+# 
+#                         # Khi data duoc send tu raspberry pi xuong STM32F4
+#                         flag2 = 0
+# 
+#                         # uart_send(text)
+#                     pre_text = text 
+#                     pre_angle = angle 
+# 
+#                     
                 #print(angle_2)
                 # print(text)
                 #print(angle_2)
-                print(points)
-                if angle_2 == 0 or angle_2 == 90 or angle_2 == -90:
-                    print("Send data")
+                
+                # if angle_2 == 0 or angle_2 == 90 or angle_2 == -90:
+                #     print("Send data")
                 
                 # cv.putText(frame, text, (x-10, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
     img = cv.resize(img, None, fx=2, fy=2,interpolation=cv.INTER_CUBIC)
@@ -170,11 +236,11 @@ while 1:
     clone = frame.copy()
     
     # hull_points = detectQRcode(frame)
-    # if hull_points != None:
-    #     print(hull_points)
+    # # if hull_points != None:
+    # #     print(hull_points)
 
 
-    # print(old_points.size)
+    # # print(old_points.size)
     stop_code = False
     # if hull_points:
     #     pt1, pt2, pt3, pt4 = hull_points
@@ -211,9 +277,10 @@ while 1:
     if key == ord("q"):
         break
     fps = frame_counter/(time.time()-starting_time)
-    # AiPhile.textBGoutline(frame, f'FPS: {round(fps,1)}', (30,40), scaling=0.6)
+    AiPhile.textBGoutline(frame, f'FPS: {round(fps,1)}', (30,40), scaling=0.6)
     cv.imshow("Streaming", frame) # chỉ cần comment dòng này thì sẽ không show UI 
 
         # close all open windows
 cv.destroyAllWindows()
 cap.release()
+

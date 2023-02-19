@@ -267,14 +267,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	    PIDReset(&tPID_2);
 	    PIDReset(&tPID_1);
 
+	    if(!strcmp(dataBuffer, "1111,1111,1111,1,1")){
+	    	HAL_UART_Transmit(&huart2, (uint8_t *)statusOK, sizeof(statusOK), 1000);
+	    } else {
+	    	 HAL_UART_Transmit(&huart2, (uint8_t *)dataBuffer, MAX_LEN_DATA, 1000);
+	    	    arrData1 = ArrProcess(dataBuffer);
+	    	    MotorTrapzoidalInit(&tProfile, arrData1.pos1, arrData1.vel1, arrData1.acc1);
+	    	    dir1 = arrData1.dir1;
+	    	    dir2 = arrData1.dir2;
+	    	    tProcess = RUN_TEST;
 
-    HAL_UART_Transmit(&huart2, (uint8_t *)dataBuffer, MAX_LEN_DATA, 1000);
-    arrData1 = ArrProcess(dataBuffer);
-    MotorTrapzoidalInit(&tProfile, arrData1.pos1, arrData1.vel1, arrData1.acc1);
-    dir1 = arrData1.dir1;
-    dir2 = arrData1.dir2;
-    tProcess = RUN_TEST;
-    SerialAcceptReceive();
+	    }
+	    SerialAcceptReceive();
   }
 }
 
