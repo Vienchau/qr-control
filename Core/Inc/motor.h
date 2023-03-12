@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 
-#define TotalPulse 10752
+#define TotalPulse 7500
 #define TotalDeg 360
 
 #define HEAD 1

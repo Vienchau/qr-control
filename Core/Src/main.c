@@ -59,18 +59,17 @@
 #define MAX_LEN_DATA 18
 void SerialInit(void);
 void SerialAcceptReceive(void);
-void SerialWriteComm();
+
 
 void MotorInit(void);
-void MotorSetDuty(uint16_t nDuty, uint8_t channel);
+void MotorSetDuty(uint16_t nDuty, uint8_t channel, uint8_t dir);
 void MotorSetDir(int8_t nDir, uint8_t channel);
 void MotorSetRun();
-void Motor1Fordward();
-void Motor1Backward();
-void Mortor2Fordward();
-void Mortor2Backward();
 void MotorGetPulse(uint32_t *nPulse, uint8_t motor);
 void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl1, PID_CONTROL_t *tPIDControl2, uint8_t dir1, uint8_t dir2);
+
+#define GO_AHEAD 1
+#define GO_BACK 0
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -116,9 +115,9 @@ int32_t dutyCycle_global_1 = 0,  dutyCycle_global_2 = 0;
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -154,15 +153,15 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM5_Init();
-  MX_TIM8_Init();
   MX_TIM1_Init();
   MX_USART2_UART_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   SerialInit();
   MotorInit();
+  MotorSetRun();
+//  __HAL_TIM_SetCounter(&htim8, 32768);
 
-  __HAL_TIM_SetCounter(&htim8, 32768);
-  __HAL_TIM_SetCounter(&htim1, 32768);
   tProcess = NONE;
 
   /* USER CODE END 2 */
@@ -170,23 +169,40 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  //      MotorSetDuty(500, MOTOR_1);
-  //      MotorSetDuty(500, MOTOR_2);
   //
   //  MotorSetRun();
   // HAL_UART_Transmit_IT(&huart2, (uint8_t*)data, sizeof(data));
+
+//  Motor1Forward();
+//  Motor1Backward();
+//  Motor2Backward();
+
+
+//	    MotorSetDuty(0, MOTOR_1);
+//	    MotorSetDuty(300, MOTOR_2);
+
+  __HAL_TIM_SetCounter(&htim3, 32768);
+  __HAL_TIM_SetCounter(&htim4, 32768);
   while (1)
   {
+//	  MotorGetPulse(&nPulse1, MOTOR_1); // get encoder counter
+//	   MotorGetPulse(&nPulse2, MOTOR_2); // get encoder counter
 
-    //	  MotorSetDuty(200, MOTOR_2);
-
-    //	  HAL_UART_Transmit(&huart2, (uint8_t*)data, sizeof(data), 1000);
-    //	  HAL_UART_Transmit(&huart1, data, sizeof(data));
-    //	  HAL_UART_Transmit(&huart1, (uint8_t *)data, sizeof(data), 1000);
-    //	  HAL_Delay(1000);
-    // HAL_UART_Transmit(&huart1, (uint8_t *)'a', 1, 1000);
-
-    //	  HAL_Delay(1000);
+//    //	  HAL_UART_Transmit(&huart2, (uint8_t*)data, sizeof(data), 1000);
+//    //	  HAL_UART_Transmit(&huart1, data, sizeof(data));
+//    //	  HAL_UART_Transmit(&huart1, (uint8_t *)data, sizeof(data), 1000);
+//    //	  HAL_Delay(1000);
+//    // HAL_UART_Transmit(&huart1, (uint8_t *)'a', 1, 1000);
+//
+////	   MotorSetRun();
+////	   Motor1Backward();
+//
+////	   Motor2Backward();
+//
+////
+//	  MotorSetDuty(300, MOTOR_1, GO_BACK);
+//	  MotorSetDuty(300, MOTOR_2, GO_BACK);
+//    //	  HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 
@@ -196,22 +212,22 @@ int main(void)
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-   */
+  */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -226,8 +242,9 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
@@ -261,15 +278,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 //	  __HAL_TIM_SetCounter(&htim8, 32768);
 //	  __HAL_TIM_SetCounter(&htim1, 32768);
 
-	  __HAL_TIM_SetCounter(&htim1, 32768);
-	    __HAL_TIM_SetCounter(&htim8, 32768);
+	  __HAL_TIM_SetCounter(&htim3, 32768);
+	    __HAL_TIM_SetCounter(&htim4, 32768);
 	    tProcess = NONE;
 	    PIDReset(&tPID_2);
 	    PIDReset(&tPID_1);
 
 	    if(!strcmp(dataBuffer, "1111,1111,1111,1,1")){
 	    	HAL_UART_Transmit(&huart2, (uint8_t *)statusOK, sizeof(statusOK), 1000);
-	    } else {
+	    }
+	    else {
 	    	 HAL_UART_Transmit(&huart2, (uint8_t *)dataBuffer, MAX_LEN_DATA, 1000);
 	    	    arrData1 = ArrProcess(dataBuffer);
 	    	    MotorTrapzoidalInit(&tProfile, arrData1.pos1, arrData1.vel1, arrData1.acc1);
@@ -284,51 +302,59 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 // set motor direction
 
-void SerialWriteComm()
-{
-  // HAL_UART_Transmit(&huart1, (uint8_t *)'hehe', 4, 1000);
-}
-
 // set (-) pwm
 void MotorSetRun()
 {
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
+
+	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
+	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
+
 }
 
 void Motor1Forward()
 {
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
+	   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
 }
 
 void Motor1Backward()
 {
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
+	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
 }
 
 void Motor2Forward()
 {
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
 }
 
 void Motor2Backward()
 {
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
 }
 
-void MotorSetDuty(uint16_t nDuty, uint8_t channel)
+void MotorSetDuty(uint16_t nDuty, uint8_t channel,  uint8_t dir)
 {
   if (channel == MOTOR_1)
   {
-    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, nDuty);
+	  if (dir == GO_BACK){
+		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, nDuty);
+	  } else {
+		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,nDuty);
+		  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_4, 0);
+	  }
+
   }
   else if (channel == MOTOR_2)
   {
-    __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, nDuty);
+	  if (dir == GO_BACK){
+		  __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, nDuty);
+		  __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_1, 0);
+	  } else {
+		  __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, 0);
+		  __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_1, nDuty);
+	  }
   }
 }
 
@@ -337,30 +363,35 @@ void MotorInit(void)
 {
   HAL_TIM_Base_Start_IT(&htim2);
 
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);
 
-  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
 
-  HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_1);
-  HAL_TIM_Encoder_Start(&htim8, TIM_CHANNEL_2);
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_2);
+
+  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_1);
+  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_2);
+
   PIDInit(&tPID_1, 3.5, 1.5, 0.2);
   PIDInit(&tPID_2, 3.5, 1.5, 0.2);
 
-  MotorSetDuty(0, MOTOR_1);
-  MotorSetDuty(0, MOTOR_2);
+  MotorSetDuty(0, MOTOR_1, GO_AHEAD);
+  MotorSetDuty(0, MOTOR_2, GO_AHEAD);
+
 }
 
 void MotorGetPulse(uint32_t *nPulse, uint8_t motor)
 {
   if (motor == MOTOR_1)
   {
-    *nPulse = __HAL_TIM_GetCounter(&htim8);
+    *nPulse = __HAL_TIM_GetCounter(&htim4);
   }
   else if (motor == MOTOR_2)
   {
-    *nPulse = __HAL_TIM_GetCounter(&htim1);
+    *nPulse = __HAL_TIM_GetCounter(&htim3);
   }
 }
 
@@ -370,12 +401,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
   if (htim->Instance == htim2.Instance)
   {
+//	  MotorGetPulse(&nPulse1, MOTOR_1); // get encoder counter
+//	   MotorGetPulse(&nPulse2, MOTOR_2);// get encoder counter
     switch (tProcess)
     {
     case NONE:
       break;
     case RUN_TEST:
+    	 MotorSetRun();
       MotorMovePos(&tProfile, &tPID_1, &tPID_2, dir1, dir2);
+//    	break;
     }
   }
 }
@@ -389,32 +424,32 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl1, PID_CONTROL_
   MotorGetPulse(&nPulse2, MOTOR_2); // get encoder counter
   if (dir1 == HEAD)
   {
-	  if((nPulse1 < 32768) && (tProfile->nTime < 0.3)){
-
-		  nPulse1 = 32768;
-	  }
+//	  if((nPulse1 < 32768) && (tProfile->nTime < 0.1)){
+//
+//		  nPulse1 = 32768;
+//	  }
     g_nActPulse_1 = nPulse1 - 32768;
   }
   else
   {
-	  if((nPulse1 > 32768) && (tProfile->nTime < 0.3)){
-		  nPulse1 = 32768;
-	  }
+//	  if((nPulse1 > 32768) && (tProfile->nTime < 0.1)){
+//		  nPulse1 = 32768;
+//	  }
     g_nActPulse_1 = 32768 - nPulse1;
   }
 
   if (dir2 == HEAD)
   {
-	  if((nPulse2 < 32768) && (tProfile->nTime < 0.3)){
-		  nPulse2 = 32768;
-	  }
+//	  if((nPulse2 < 32768) && (tProfile->nTime < 0.1)){
+//		  nPulse2 = 32768;
+//	  }
 	  g_nActPulse_2 = nPulse2 - 32768;
   }
   else
   {
-	  if((nPulse2 > 32768) && (tProfile->nTime < 0.3)){
-		  nPulse2 = 32768;
-	  }
+//	  if((nPulse2 > 32768) && (tProfile->nTime < 0.1)){
+//		  nPulse2 = 32768;
+//	  }
     g_nActPulse_2 = 32768 - nPulse2;
   }
 
@@ -460,66 +495,63 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl1, PID_CONTROL_
   {
     if (dir1 == HEAD)
     {
-      Motor1Forward();
+      MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1, GO_AHEAD);
     }
     else
     {
-      Motor1Backward();
+      MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1,GO_BACK);
     }
-    MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1);
   }
   else if (g_nDutyCycle_1 < 0)
   {
 
     if (dir1 == HEAD)
     {
-      Motor1Backward();
+      MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1, GO_BACK);
     }
     else
     {
-      Motor1Forward();
+      MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1, GO_AHEAD);
     }
-    MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1);
+
   }
 
   if (g_nDutyCycle_2 >= 0)
   {
     if (dir2 == HEAD)
     {
-      Motor2Forward();
+      MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2, GO_AHEAD);
     }
     else
     {
-      Motor2Backward();
+      MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2, GO_BACK);
     }
-    MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2);
   }
   else if (g_nDutyCycle_2 < 0)
   {
 
     if (dir2 == HEAD)
     {
-      Motor2Backward();
+    	MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2, GO_BACK);
     }
     else
     {
-      Motor2Forward();
+    	MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2, GO_AHEAD);
     }
-    MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2);
   }
 
   if (tProfile->nTime > tProfile->dMidStep3)
   {
-    __HAL_TIM_SetCounter(&htim1, 32768);
-    __HAL_TIM_SetCounter(&htim8, 32768);
+    __HAL_TIM_SetCounter(&htim4, 32768);
+    __HAL_TIM_SetCounter(&htim3, 32768);
     dPosTemp = 0;
     g_nDutyCycle_1 = 0;
     g_nDutyCycle_2 = 0;
     g_dCmdVel = 0;
     tProfile->nTime = 0;
     tProcess = NONE;
-    MotorSetDuty(0, MOTOR_1);
-    MotorSetDuty(0, MOTOR_2);
+    MotorSetDuty(0, MOTOR_1, GO_AHEAD);
+    MotorSetDuty(0, MOTOR_2, GO_AHEAD);
     PIDReset(&tPID_2);
     PIDReset(&tPID_1);
     HAL_UART_Transmit(&huart2, (uint8_t *)statusOK, sizeof(statusOK), 1000);
@@ -530,9 +562,9 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl1, PID_CONTROL_
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -544,14 +576,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
