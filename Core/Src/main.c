@@ -62,7 +62,7 @@ void SerialAcceptReceive(void);
 
 
 void MotorInit(void);
-void MotorSetDuty(uint16_t nDuty, uint8_t channel, uint8_t dir);
+void MotorSetDuty(uint16_t nDuty, uint8_t channel);
 void MotorSetDir(int8_t nDir, uint8_t channel);
 void MotorSetRun();
 void MotorGetPulse(uint32_t *nPulse, uint8_t motor);
@@ -160,7 +160,6 @@ int main(void)
   SerialInit();
   MotorInit();
   MotorSetRun();
-//  __HAL_TIM_SetCounter(&htim8, 32768);
 
   tProcess = NONE;
 
@@ -169,41 +168,16 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  //
-  //  MotorSetRun();
-  // HAL_UART_Transmit_IT(&huart2, (uint8_t*)data, sizeof(data));
-
-//  Motor1Forward();
-//  Motor1Backward();
-//  Motor2Backward();
-
-
-//	    MotorSetDuty(0, MOTOR_1);
-//	    MotorSetDuty(300, MOTOR_2);
-
   __HAL_TIM_SetCounter(&htim3, 32768);
   __HAL_TIM_SetCounter(&htim4, 32768);
   while (1)
   {
-//	  MotorGetPulse(&nPulse1, MOTOR_1); // get encoder counter
-//	   MotorGetPulse(&nPulse2, MOTOR_2); // get encoder counter
-
-//    //	  HAL_UART_Transmit(&huart2, (uint8_t*)data, sizeof(data), 1000);
-//    //	  HAL_UART_Transmit(&huart1, data, sizeof(data));
-//    //	  HAL_UART_Transmit(&huart1, (uint8_t *)data, sizeof(data), 1000);
-//    //	  HAL_Delay(1000);
-//    // HAL_UART_Transmit(&huart1, (uint8_t *)'a', 1, 1000);
-//
-////	   MotorSetRun();
-////	   Motor1Backward();
-//
-////	   Motor2Backward();
-//
-////
-//	  MotorSetDuty(300, MOTOR_1, GO_BACK);
-//	  MotorSetDuty(300, MOTOR_2, GO_BACK);
-//    //	  HAL_Delay(1000);
-
+//	  	MotorGetPulse(&nPulse1, MOTOR_1); // get encoder counter
+//	   	MotorGetPulse(&nPulse2, MOTOR_2); // get encoder counter
+//	   	Motor1Forward();
+//	   	Motor2Forward();
+//	  	MotorSetDuty(300, MOTOR_1);
+//	  	MotorSetDuty(300, MOTOR_2);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -273,12 +247,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == huart2.Instance)
   {
-    //	  MotorSetDuty(0, MOTOR_2);
-    //	  MotorSetDuty(0, MOTOR_1);
-//	  __HAL_TIM_SetCounter(&htim8, 32768);
-//	  __HAL_TIM_SetCounter(&htim1, 32768);
-
-	  __HAL_TIM_SetCounter(&htim3, 32768);
+//    	MotorSetDuty(0, MOTOR_2);
+//    	MotorSetDuty(0, MOTOR_1);
+    	__HAL_TIM_SetCounter(&htim3, 32768);
 	    __HAL_TIM_SetCounter(&htim4, 32768);
 	    tProcess = NONE;
 	    PIDReset(&tPID_1);
@@ -297,7 +268,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	    	    tProcess = RUN_TEST;
 
 	    }
-//	    memset(dataBuffer, '\0', 18*sizeof(char));
 	    SerialAcceptReceive();
   }
 }
@@ -307,60 +277,42 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 // set (-) pwm
 void MotorSetRun()
 {
-//	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
-//	  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
-//
-//	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
-//	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_SET);
-
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_3, GPIO_PIN_RESET);
 
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_RESET);
 	HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_RESET);
-
 }
 
 void Motor1Forward()
 {
-	   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+	 HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
 }
 
 void Motor1Backward()
 {
-	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
+	 HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
 }
 
 void Motor2Forward()
 {
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+	 HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
 }
 
 void Motor2Backward()
 {
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
 }
 
-void MotorSetDuty(uint16_t nDuty, uint8_t channel,  uint8_t dir)
+void MotorSetDuty(uint16_t nDuty, uint8_t channel)
 {
   if (channel == MOTOR_1)
   {
-	  if (dir == GO_BACK){
-		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
-	  } else {
-		  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
-	  }
 	  __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,nDuty);
-
   }
   else if (channel == MOTOR_2)
   {
-	  if (dir == GO_BACK){
-		  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
-	  } else {
-		  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-	  }
-	  __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_1, nDuty);
+	  __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_1,nDuty);
   }
 }
 
@@ -369,10 +321,11 @@ void MotorInit(void)
 {
   HAL_TIM_Base_Start_IT(&htim2);
 
-  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-  HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);
 
+  HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_1);
+
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_4);
 
   HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_1);
@@ -384,8 +337,8 @@ void MotorInit(void)
   PIDInit(&tPID_1, 3.5, 1.5, 0.2);
   PIDInit(&tPID_2, 3.5, 1.5, 0.2);
 
-  MotorSetDuty(0, MOTOR_1, GO_AHEAD);
-  MotorSetDuty(0, MOTOR_2, GO_AHEAD);
+  MotorSetDuty(0, MOTOR_1);
+  MotorSetDuty(0, MOTOR_2);
 
 }
 
@@ -407,16 +360,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
   if (htim->Instance == htim2.Instance)
   {
-//	  MotorGetPulse(&nPulse1, MOTOR_1); // get encoder counter
-//	   MotorGetPulse(&nPulse2, MOTOR_2);// get encoder counter
     switch (tProcess)
     {
     case NONE:
-      break;
+    	break;
     case RUN_TEST:
-    	 MotorSetRun();
-      MotorMovePos(&tProfile, &tPID_1, &tPID_2, dir1, dir2);
-//    	break;
+    	MotorSetRun();
+    	MotorMovePos(&tProfile, &tPID_1, &tPID_2, dir1, dir2);
     }
   }
 }
@@ -493,44 +443,43 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl1, PID_CONTROL_
   g_nCmdPulse = ConvertDegToPulse(dPosTemp);
 
   g_nDutyCycle_1 = (int16_t)PIDCompute(tPIDControl1, g_nCmdPulse, g_nActPulse_1_tmp, SAMPLING_TIME);
-  g_nDutyCycle_2 = (int16_t)PIDCompute(tPIDControl2, g_nCmdPulse, g_nActPulse_2_tmp, SAMPLING_TIME);
+  g_nDutyCycle_2 = (int16_t)(PIDCompute(tPIDControl2, g_nCmdPulse, g_nActPulse_2_tmp, SAMPLING_TIME));
 
   dutyCycle_global_1 = g_nDutyCycle_1;
   dutyCycle_global_2 = g_nDutyCycle_2;
+
   if (g_nDutyCycle_1 >= 0)
   {
     if (dir1 == HEAD)
     {
-      MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1, GO_AHEAD);
+    	Motor1Forward();
     }
     else
     {
-      MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1,GO_BACK);
+    	Motor1Backward();
     }
   }
   else if (g_nDutyCycle_1 < 0)
   {
-
     if (dir1 == HEAD)
     {
-      MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1, GO_BACK);
+    	Motor1Backward();
     }
     else
     {
-      MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1, GO_AHEAD);
+    	Motor1Forward();
     }
-
   }
 
   if (g_nDutyCycle_2 >= 0)
   {
     if (dir2 == HEAD)
     {
-      MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2, GO_AHEAD);
+    	Motor2Forward();
     }
     else
     {
-      MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2, GO_BACK);
+    	Motor2Backward();
     }
   }
   else if (g_nDutyCycle_2 < 0)
@@ -538,13 +487,16 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl1, PID_CONTROL_
 
     if (dir2 == HEAD)
     {
-    	MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2, GO_BACK);
+    	Motor2Backward();
     }
     else
     {
-    	MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2, GO_AHEAD);
+    	Motor2Forward();
+
     }
   }
+  MotorSetDuty(abs(g_nDutyCycle_1), MOTOR_1);
+  MotorSetDuty(abs(g_nDutyCycle_2), MOTOR_2);
 
   if (tProfile->nTime > tProfile->dMidStep3)
   {
@@ -556,8 +508,8 @@ void MotorMovePos(PROFILE_t *tProfile, PID_CONTROL_t *tPIDControl1, PID_CONTROL_
     g_dCmdVel = 0;
     tProfile->nTime = 0;
     tProcess = NONE;
-    MotorSetDuty(0, MOTOR_1, GO_AHEAD);
-    MotorSetDuty(0, MOTOR_2, GO_AHEAD);
+    MotorSetDuty(0, MOTOR_1);
+    MotorSetDuty(0, MOTOR_2);
     PIDReset(&tPID_2);
     PIDReset(&tPID_1);
     HAL_UART_Transmit(&huart2, (uint8_t *)statusOK, sizeof(statusOK), 1000);

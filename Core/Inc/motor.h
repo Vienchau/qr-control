@@ -13,6 +13,7 @@
 
 #define TotalPulse 7500
 #define TotalDeg 360
+//#define TotalPulse2 10000
 
 #define HEAD 1
 #define BACK 0
