@@ -18,6 +18,7 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
+#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QWidget>
@@ -80,6 +81,9 @@ public:
     QPushButton *pushButton_8;
     QGroupBox *groupBox_6;
     QTextBrowser *textBrowser_3;
+    QGroupBox *groupBox_7;
+    QRadioButton *radioButton_2;
+    QRadioButton *radioButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -607,7 +611,7 @@ public:
         groupBox_5->setAlignment(Qt::AlignCenter);
         pushButton = new QPushButton(groupBox_5);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(20, 210, 181, 51));
+        pushButton->setGeometry(QRect(20, 290, 181, 51));
         QFont font3;
         font3.setPointSize(11);
         font3.setBold(false);
@@ -630,39 +634,39 @@ public:
         label->setFont(font4);
         pushButton_2 = new QPushButton(groupBox_5);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setGeometry(QRect(220, 210, 181, 51));
+        pushButton_2->setGeometry(QRect(220, 290, 181, 51));
         pushButton_2->setFont(font3);
         pushButton_3 = new QPushButton(groupBox_5);
         pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
-        pushButton_3->setGeometry(QRect(20, 270, 381, 51));
+        pushButton_3->setGeometry(QRect(20, 360, 381, 51));
         pushButton_3->setFont(font3);
         pushButton_4 = new QPushButton(groupBox_5);
         pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
-        pushButton_4->setGeometry(QRect(20, 330, 381, 51));
+        pushButton_4->setGeometry(QRect(20, 420, 381, 51));
         pushButton_4->setFont(font3);
         label_2 = new QLabel(groupBox_5);
         label_2->setObjectName(QString::fromUtf8("label_2"));
-        label_2->setGeometry(QRect(20, 190, 141, 17));
+        label_2->setGeometry(QRect(20, 270, 141, 17));
         label_2->setFont(font4);
         pushButton_5 = new QPushButton(groupBox_5);
         pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
-        pushButton_5->setGeometry(QRect(20, 390, 381, 51));
+        pushButton_5->setGeometry(QRect(20, 480, 381, 51));
         pushButton_5->setFont(font3);
         label_4 = new QLabel(groupBox_5);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(20, 100, 141, 17));
+        label_4->setGeometry(QRect(20, 190, 141, 17));
         label_4->setFont(font4);
         pushButton_7 = new QPushButton(groupBox_5);
         pushButton_7->setObjectName(QString::fromUtf8("pushButton_7"));
-        pushButton_7->setGeometry(QRect(20, 130, 181, 51));
+        pushButton_7->setGeometry(QRect(20, 210, 181, 51));
         pushButton_7->setFont(font3);
         pushButton_8 = new QPushButton(groupBox_5);
         pushButton_8->setObjectName(QString::fromUtf8("pushButton_8"));
-        pushButton_8->setGeometry(QRect(220, 130, 181, 51));
+        pushButton_8->setGeometry(QRect(220, 210, 181, 51));
         pushButton_8->setFont(font3);
         groupBox_6 = new QGroupBox(groupBox_5);
         groupBox_6->setObjectName(QString::fromUtf8("groupBox_6"));
-        groupBox_6->setGeometry(QRect(20, 450, 381, 271));
+        groupBox_6->setGeometry(QRect(20, 530, 381, 191));
         QFont font5;
         font5.setPointSize(13);
         font5.setBold(true);
@@ -671,7 +675,19 @@ public:
         groupBox_6->setAlignment(Qt::AlignCenter);
         textBrowser_3 = new QTextBrowser(groupBox_6);
         textBrowser_3->setObjectName(QString::fromUtf8("textBrowser_3"));
-        textBrowser_3->setGeometry(QRect(20, 40, 341, 211));
+        textBrowser_3->setGeometry(QRect(20, 40, 341, 141));
+        groupBox_7 = new QGroupBox(groupBox_5);
+        groupBox_7->setObjectName(QString::fromUtf8("groupBox_7"));
+        groupBox_7->setGeometry(QRect(20, 100, 381, 80));
+        groupBox_7->setFont(font4);
+        radioButton_2 = new QRadioButton(groupBox_7);
+        radioButton_2->setObjectName(QString::fromUtf8("radioButton_2"));
+        radioButton_2->setGeometry(QRect(240, 40, 112, 23));
+        radioButton_2->setFont(font3);
+        radioButton = new QRadioButton(groupBox_7);
+        radioButton->setObjectName(QString::fromUtf8("radioButton"));
+        radioButton->setGeometry(QRect(50, 40, 131, 23));
+        radioButton->setFont(font3);
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -741,6 +757,9 @@ public:
         pushButton_7->setText(QCoreApplication::translate("MainWindow", "Connect", nullptr));
         pushButton_8->setText(QCoreApplication::translate("MainWindow", "Disconnect", nullptr));
         groupBox_6->setTitle(QCoreApplication::translate("MainWindow", "Status Output Log", nullptr));
+        groupBox_7->setTitle(QCoreApplication::translate("MainWindow", "Path Selection", nullptr));
+        radioButton_2->setText(QCoreApplication::translate("MainWindow", "Manual Set", nullptr));
+        radioButton->setText(QCoreApplication::translate("MainWindow", "Auto Generate", nullptr));
     } // retranslateUi
 
 };

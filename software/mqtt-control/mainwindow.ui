@@ -714,9 +714,9 @@
     <property name="geometry">
      <rect>
       <x>20</x>
-      <y>520</y>
+      <y>580</y>
       <width>501</width>
-      <height>231</height>
+      <height>171</height>
      </rect>
     </property>
     <property name="font">
@@ -736,9 +736,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>41</y>
+       <y>40</y>
        <width>461</width>
-       <height>171</height>
+       <height>121</height>
       </rect>
      </property>
     </widget>
@@ -1535,7 +1535,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>210</y>
+       <y>290</y>
        <width>181</width>
        <height>51</height>
       </rect>
@@ -1610,7 +1610,7 @@
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>210</y>
+       <y>290</y>
        <width>181</width>
        <height>51</height>
       </rect>
@@ -1631,7 +1631,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>270</y>
+       <y>360</y>
        <width>381</width>
        <height>51</height>
       </rect>
@@ -1652,7 +1652,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>330</y>
+       <y>420</y>
        <width>381</width>
        <height>51</height>
       </rect>
@@ -1673,7 +1673,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>190</y>
+       <y>270</y>
        <width>141</width>
        <height>17</height>
       </rect>
@@ -1694,7 +1694,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>390</y>
+       <y>480</y>
        <width>381</width>
        <height>51</height>
       </rect>
@@ -1715,7 +1715,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>100</y>
+       <y>190</y>
        <width>141</width>
        <height>17</height>
       </rect>
@@ -1736,7 +1736,7 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>130</y>
+       <y>210</y>
        <width>181</width>
        <height>51</height>
       </rect>
@@ -1757,7 +1757,7 @@
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>130</y>
+       <y>210</y>
        <width>181</width>
        <height>51</height>
       </rect>
@@ -1778,9 +1778,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>450</y>
+       <y>530</y>
        <width>381</width>
-       <height>271</height>
+       <height>191</height>
       </rect>
      </property>
      <property name="font">
@@ -1803,11 +1803,100 @@
         <x>20</x>
         <y>40</y>
         <width>341</width>
-        <height>211</height>
+        <height>141</height>
        </rect>
       </property>
      </widget>
     </widget>
+    <widget class="QGroupBox" name="groupBox_7">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>100</y>
+       <width>381</width>
+       <height>80</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="title">
+      <string>Path Selection</string>
+     </property>
+     <widget class="QRadioButton" name="radioButton_2">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>40</y>
+        <width>112</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <kerning>false</kerning>
+       </font>
+      </property>
+      <property name="text">
+       <string>Manual Set</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>40</y>
+        <width>131</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>11</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+        <kerning>false</kerning>
+       </font>
+      </property>
+      <property name="text">
+       <string>Auto Generate</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="submitButton">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>530</y>
+      <width>221</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Submit</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="clearButton">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>530</y>
+      <width>221</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
