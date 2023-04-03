@@ -84,6 +84,8 @@ public:
     QGroupBox *groupBox_7;
     QRadioButton *radioButton_2;
     QRadioButton *radioButton;
+    QPushButton *submitButton;
+    QPushButton *clearButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -121,7 +123,7 @@ public:
         icon.addFile(QString::fromUtf8("../../icon/01.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton01->setIcon(icon);
         matButton01->setIconSize(QSize(90, 90));
-        matButton01->setCheckable(true);
+        matButton01->setCheckable(false);
         matButton01->setChecked(false);
         matButton11 = new QPushButton(groupBox);
         matButton11->setObjectName(QString::fromUtf8("matButton11"));
@@ -135,7 +137,7 @@ public:
         icon1.addFile(QString::fromUtf8("../../icon/11.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton11->setIcon(icon1);
         matButton11->setIconSize(QSize(90, 90));
-        matButton11->setCheckable(true);
+        matButton11->setCheckable(false);
         matButton11->setChecked(false);
         matButton21 = new QPushButton(groupBox);
         matButton21->setObjectName(QString::fromUtf8("matButton21"));
@@ -149,7 +151,7 @@ public:
         icon2.addFile(QString::fromUtf8("../../icon/21.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton21->setIcon(icon2);
         matButton21->setIconSize(QSize(90, 90));
-        matButton21->setCheckable(true);
+        matButton21->setCheckable(false);
         matButton21->setChecked(false);
         matButton31 = new QPushButton(groupBox);
         matButton31->setObjectName(QString::fromUtf8("matButton31"));
@@ -163,7 +165,7 @@ public:
         icon3.addFile(QString::fromUtf8("../../icon/31.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton31->setIcon(icon3);
         matButton31->setIconSize(QSize(90, 90));
-        matButton31->setCheckable(true);
+        matButton31->setCheckable(false);
         matButton31->setChecked(false);
         matButton02 = new QPushButton(groupBox);
         matButton02->setObjectName(QString::fromUtf8("matButton02"));
@@ -177,7 +179,7 @@ public:
         icon4.addFile(QString::fromUtf8("../../icon/02.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton02->setIcon(icon4);
         matButton02->setIconSize(QSize(90, 90));
-        matButton02->setCheckable(true);
+        matButton02->setCheckable(false);
         matButton02->setChecked(false);
         matButton12 = new QPushButton(groupBox);
         matButton12->setObjectName(QString::fromUtf8("matButton12"));
@@ -191,7 +193,7 @@ public:
         icon5.addFile(QString::fromUtf8("../../icon/12.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton12->setIcon(icon5);
         matButton12->setIconSize(QSize(90, 90));
-        matButton12->setCheckable(true);
+        matButton12->setCheckable(false);
         matButton12->setChecked(false);
         matButton22 = new QPushButton(groupBox);
         matButton22->setObjectName(QString::fromUtf8("matButton22"));
@@ -205,7 +207,7 @@ public:
         icon6.addFile(QString::fromUtf8("../../icon/22.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton22->setIcon(icon6);
         matButton22->setIconSize(QSize(90, 90));
-        matButton22->setCheckable(true);
+        matButton22->setCheckable(false);
         matButton22->setChecked(false);
         matButton32 = new QPushButton(groupBox);
         matButton32->setObjectName(QString::fromUtf8("matButton32"));
@@ -219,7 +221,7 @@ public:
         icon7.addFile(QString::fromUtf8("../../icon/32.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton32->setIcon(icon7);
         matButton32->setIconSize(QSize(90, 90));
-        matButton32->setCheckable(true);
+        matButton32->setCheckable(false);
         matButton32->setChecked(false);
         matButton03 = new QPushButton(groupBox);
         matButton03->setObjectName(QString::fromUtf8("matButton03"));
@@ -233,7 +235,7 @@ public:
         icon8.addFile(QString::fromUtf8("../../icon/04.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton03->setIcon(icon8);
         matButton03->setIconSize(QSize(90, 90));
-        matButton03->setCheckable(true);
+        matButton03->setCheckable(false);
         matButton03->setChecked(false);
         matButton13 = new QPushButton(groupBox);
         matButton13->setObjectName(QString::fromUtf8("matButton13"));
@@ -247,7 +249,7 @@ public:
         icon9.addFile(QString::fromUtf8("../../icon/13.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton13->setIcon(icon9);
         matButton13->setIconSize(QSize(90, 90));
-        matButton13->setCheckable(true);
+        matButton13->setCheckable(false);
         matButton13->setChecked(false);
         matButton23 = new QPushButton(groupBox);
         matButton23->setObjectName(QString::fromUtf8("matButton23"));
@@ -261,7 +263,7 @@ public:
         icon10.addFile(QString::fromUtf8("../../icon/23.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton23->setIcon(icon10);
         matButton23->setIconSize(QSize(90, 90));
-        matButton23->setCheckable(true);
+        matButton23->setCheckable(false);
         matButton23->setChecked(false);
         matButton33 = new QPushButton(groupBox);
         matButton33->setObjectName(QString::fromUtf8("matButton33"));
@@ -275,7 +277,7 @@ public:
         icon11.addFile(QString::fromUtf8("../../icon/33.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton33->setIcon(icon11);
         matButton33->setIconSize(QSize(90, 90));
-        matButton33->setCheckable(true);
+        matButton33->setCheckable(false);
         matButton33->setChecked(false);
         matButton04 = new QPushButton(groupBox);
         matButton04->setObjectName(QString::fromUtf8("matButton04"));
@@ -287,7 +289,7 @@ public:
 "}"));
         matButton04->setIcon(icon8);
         matButton04->setIconSize(QSize(90, 90));
-        matButton04->setCheckable(true);
+        matButton04->setCheckable(false);
         matButton04->setChecked(false);
         matButton14 = new QPushButton(groupBox);
         matButton14->setObjectName(QString::fromUtf8("matButton14"));
@@ -301,7 +303,7 @@ public:
         icon12.addFile(QString::fromUtf8("../../icon/14.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton14->setIcon(icon12);
         matButton14->setIconSize(QSize(90, 90));
-        matButton14->setCheckable(true);
+        matButton14->setCheckable(false);
         matButton14->setChecked(false);
         matButton24 = new QPushButton(groupBox);
         matButton24->setObjectName(QString::fromUtf8("matButton24"));
@@ -315,7 +317,7 @@ public:
         icon13.addFile(QString::fromUtf8("../../icon/24.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton24->setIcon(icon13);
         matButton24->setIconSize(QSize(90, 90));
-        matButton24->setCheckable(true);
+        matButton24->setCheckable(false);
         matButton24->setChecked(false);
         matButton34 = new QPushButton(groupBox);
         matButton34->setObjectName(QString::fromUtf8("matButton34"));
@@ -329,11 +331,11 @@ public:
         icon14.addFile(QString::fromUtf8("../../icon/34.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         matButton34->setIcon(icon14);
         matButton34->setIconSize(QSize(90, 90));
-        matButton34->setCheckable(true);
+        matButton34->setCheckable(false);
         matButton34->setChecked(false);
         groupBox_2 = new QGroupBox(centralwidget);
         groupBox_2->setObjectName(QString::fromUtf8("groupBox_2"));
-        groupBox_2->setGeometry(QRect(20, 520, 501, 231));
+        groupBox_2->setGeometry(QRect(20, 580, 501, 171));
         QFont font1;
         font1.setPointSize(13);
         font1.setBold(true);
@@ -341,7 +343,7 @@ public:
         groupBox_2->setAlignment(Qt::AlignCenter);
         textBrowser = new QTextBrowser(groupBox_2);
         textBrowser->setObjectName(QString::fromUtf8("textBrowser"));
-        textBrowser->setGeometry(QRect(20, 41, 461, 171));
+        textBrowser->setGeometry(QRect(20, 40, 461, 121));
         groupBox_3 = new QGroupBox(centralwidget);
         groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
         groupBox_3->setGeometry(QRect(540, 20, 501, 491));
@@ -666,7 +668,7 @@ public:
         pushButton_8->setFont(font3);
         groupBox_6 = new QGroupBox(groupBox_5);
         groupBox_6->setObjectName(QString::fromUtf8("groupBox_6"));
-        groupBox_6->setGeometry(QRect(20, 530, 381, 191));
+        groupBox_6->setGeometry(QRect(20, 530, 381, 181));
         QFont font5;
         font5.setPointSize(13);
         font5.setBold(true);
@@ -675,7 +677,7 @@ public:
         groupBox_6->setAlignment(Qt::AlignCenter);
         textBrowser_3 = new QTextBrowser(groupBox_6);
         textBrowser_3->setObjectName(QString::fromUtf8("textBrowser_3"));
-        textBrowser_3->setGeometry(QRect(20, 40, 341, 141));
+        textBrowser_3->setGeometry(QRect(20, 40, 341, 131));
         groupBox_7 = new QGroupBox(groupBox_5);
         groupBox_7->setObjectName(QString::fromUtf8("groupBox_7"));
         groupBox_7->setGeometry(QRect(20, 100, 381, 80));
@@ -688,6 +690,12 @@ public:
         radioButton->setObjectName(QString::fromUtf8("radioButton"));
         radioButton->setGeometry(QRect(50, 40, 131, 23));
         radioButton->setFont(font3);
+        submitButton = new QPushButton(centralwidget);
+        submitButton->setObjectName(QString::fromUtf8("submitButton"));
+        submitButton->setGeometry(QRect(40, 530, 221, 41));
+        clearButton = new QPushButton(centralwidget);
+        clearButton->setObjectName(QString::fromUtf8("clearButton"));
+        clearButton->setGeometry(QRect(280, 530, 221, 41));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -760,6 +768,8 @@ public:
         groupBox_7->setTitle(QCoreApplication::translate("MainWindow", "Path Selection", nullptr));
         radioButton_2->setText(QCoreApplication::translate("MainWindow", "Manual Set", nullptr));
         radioButton->setText(QCoreApplication::translate("MainWindow", "Auto Generate", nullptr));
+        submitButton->setText(QCoreApplication::translate("MainWindow", "Submit", nullptr));
+        clearButton->setText(QCoreApplication::translate("MainWindow", "Clear", nullptr));
     } // retranslateUi
 
 };

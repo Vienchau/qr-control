@@ -50,6 +50,10 @@ private slots:
 
     void on_matButton01_released();
 
+    void on_submitButton_clicked();
+
+    void on_clearButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 };

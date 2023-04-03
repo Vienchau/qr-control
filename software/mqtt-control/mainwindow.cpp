@@ -11,21 +11,18 @@
 #include <QThread>
 
 // Global flag definition
-int                                 globalFlagCounter = 0;
-int                                 Matrix[4][4] = {    {0, 0, 0, 0},
-                                                        {0, 0, 0, 0},
-                                                        {0, 0, 0, 0},
-                                                        {0, 0, 0, 0}    }           ;
+int globalFlagCounter = 0;
+int Matrix[4][4] = {{0, 0, 0, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0},
+                    {0, 0, 0, 0}};
 
-FlagChange                          flagChangeIncrease  ,   flagChangeDecrease      ;
-HandleFlagChange                    handleFlagChange    ,   handleFlagChangeDecrease;
-QVector<QVector<QPushButton *>>     pushButMat_setting  ,   pushButMat_tracking     ;
-QVector<QVector<int>>               StorePoint                                      ;
+FlagChange flagChangeIncrease, flagChangeDecrease;
+HandleFlagChange handleFlagChange, handleFlagChangeDecrease;
+QVector<QVector<QPushButton *>> pushButMat_setting, pushButMat_tracking;
+QVector<QVector<int>> StorePoint;
 
-//TODO: implement submit button.
-//TODO: implement clear button.
-//TODO: handle user click more than 2 times in matrix,handle StorePoint with re-clicked one button.
-
+// TODO: Implement path generate to publish mqtt (note: using xDelta, yDelta).
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -58,21 +55,28 @@ void MainWindow::on_matButton01_clicked()
     int localFlagMatrix = Matrix[0][0];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton01);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[0][0] = 1;
-        StorePoint.push_back({0,0});
+        StorePoint.push_back({0, 0});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton01);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[0][0] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({0, 0}));
     }
 
-    if(globalFlagCounter == 2) {
-
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton11_clicked()
@@ -81,16 +85,28 @@ void MainWindow::on_matButton11_clicked()
     int localFlagMatrix = Matrix[1][0];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton11);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[1][0] = 1;
+        StorePoint.push_back({1, 0});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton11);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[1][0] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({1, 0}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton21_clicked()
@@ -99,16 +115,28 @@ void MainWindow::on_matButton21_clicked()
     int localFlagMatrix = Matrix[2][0];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton21);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[2][0] = 1;
+        StorePoint.push_back({2, 0});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton21);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[2][0] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({2, 0}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton31_clicked()
@@ -117,16 +145,28 @@ void MainWindow::on_matButton31_clicked()
     int localFlagMatrix = Matrix[3][0];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton31);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[3][0] = 1;
+        StorePoint.push_back({3, 0});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton31);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[3][0] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({3, 0}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton02_clicked()
@@ -135,16 +175,27 @@ void MainWindow::on_matButton02_clicked()
     int localFlagMatrix = Matrix[0][1];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton02);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[0][1] = 1;
+        StorePoint.push_back({0, 1});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton02);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[0][1] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({0, 1}));
+    }
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton12_clicked()
@@ -153,16 +204,28 @@ void MainWindow::on_matButton12_clicked()
     int localFlagMatrix = Matrix[1][1];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton12);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[1][1] = 1;
+        StorePoint.push_back({1, 1});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton12);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[1][1] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({1, 1}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton22_clicked()
@@ -171,16 +234,28 @@ void MainWindow::on_matButton22_clicked()
     int localFlagMatrix = Matrix[2][1];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton22);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[2][1] = 1;
+        StorePoint.push_back({2, 1});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton22);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[2][1] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({2, 1}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton32_clicked()
@@ -189,16 +264,28 @@ void MainWindow::on_matButton32_clicked()
     int localFlagMatrix = Matrix[3][1];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton32);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[3][1] = 1;
+        StorePoint.push_back({3, 1});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton32);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[3][1] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({3, 1}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton03_clicked()
@@ -207,16 +294,27 @@ void MainWindow::on_matButton03_clicked()
     int localFlagMatrix = Matrix[0][2];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton03);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[0][2] = 1;
+        StorePoint.push_back({0, 2});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton03);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[0][2] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({0, 2}));
     }
 
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
+    }
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton13_clicked()
@@ -225,16 +323,28 @@ void MainWindow::on_matButton13_clicked()
     int localFlagMatrix = Matrix[1][2];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton13);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[1][2] = 1;
+        StorePoint.push_back({1, 2});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton13);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[1][2] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({1, 2}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton23_clicked()
@@ -243,16 +353,28 @@ void MainWindow::on_matButton23_clicked()
     int localFlagMatrix = Matrix[2][2];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton23);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[2][2] = 1;
+        StorePoint.push_back({2, 2});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton23);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[2][2] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({2, 2}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton33_clicked()
@@ -261,16 +383,28 @@ void MainWindow::on_matButton33_clicked()
     int localFlagMatrix = Matrix[3][2];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton33);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[3][2] = 1;
+        StorePoint.push_back({3, 2});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton33);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[3][2] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({3, 2}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton04_clicked()
@@ -279,16 +413,28 @@ void MainWindow::on_matButton04_clicked()
     int localFlagMatrix = Matrix[0][3];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton04);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[0][3] = 1;
+        StorePoint.push_back({0, 3});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton04);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[0][3] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({0, 3}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton14_clicked()
@@ -297,16 +443,28 @@ void MainWindow::on_matButton14_clicked()
     int localFlagMatrix = Matrix[1][3];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton14);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[1][3] = 1;
+        StorePoint.push_back({1, 3});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton14);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[1][3] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({1, 3}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton24_clicked()
@@ -315,16 +473,28 @@ void MainWindow::on_matButton24_clicked()
     int localFlagMatrix = Matrix[2][3];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton24);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[2][3] = 1;
+        StorePoint.push_back({2, 3});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton24);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[2][3] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({2, 3}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
 
 void MainWindow::on_matButton34_clicked()
@@ -333,14 +503,84 @@ void MainWindow::on_matButton34_clicked()
     int localFlagMatrix = Matrix[3][3];
     if (localFlagMatrix == 0)
     {
+        SetBluePushButton(ui->matButton34);
         flagChangeIncrease.emitIncreaseCounter(&globalFlagCounter);
         Matrix[3][3] = 1;
+        StorePoint.push_back({3, 3});
     }
     else if (localFlagMatrix == 1)
     {
+        RemoveColorPushButton(ui->matButton34);
         flagChangeDecrease.emitDecreaseCounter(&globalFlagCounter);
         Matrix[3][3] = 0;
+        EnableAllButton(pushButMat_setting);
+        RemoveColorUnClickedButton(pushButMat_setting, Matrix);
+        StorePoint.remove(StorePoint.indexOf({3, 3}));
+    }
+
+    if (globalFlagCounter == 2)
+    {
+        DisableAllButton(pushButMat_setting, Matrix);
     }
 
     PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
+}
+
+void MainWindow::on_submitButton_clicked()
+{
+    int xBegin  = StorePoint.value(0).value(0);
+    int yBegin  = StorePoint.value(0).value(1);
+    int xEnd    = StorePoint.value(1).value(0);
+    int yEnd    = StorePoint.value(1).value(1);
+
+    AutoPath aPath;
+    aPath.Counter = 0;
+
+    qDebug() << "xBegin = " << xBegin;
+    qDebug() << "yBegin = " << yBegin;
+    qDebug() << "xEnd = "   << xEnd;
+    qDebug() << "yEnd = "   << yEnd;
+
+    if (xBegin < xEnd)
+    {
+        for (int i = xBegin; i <= xEnd; i++)
+        {
+            SetBluePushButton(pushButMat_setting.value(i).value(yBegin));
+            aPath.Array[aPath.Counter] = GO_AHEAD;
+            aPath.Counter ++;
+        }
+    }
+    else if (xBegin > xEnd)
+    {
+        for (int i = xBegin; i >= xEnd; i--)
+        {
+            SetBluePushButton(pushButMat_setting.value(i).value(yBegin));
+        }
+    }
+    if (yBegin < yEnd)
+    {
+        for (int i = yBegin; i <= yEnd; i++)
+        {
+            SetBluePushButton(pushButMat_setting.value(xEnd).value(i));
+        }
+    }
+    else if (yBegin > yEnd)
+    {
+        for (int i = yBegin; i >= yEnd; i--)
+        {
+            SetBluePushButton(pushButMat_setting.value(xEnd).value(i));
+        }
+    }
+}
+
+void MainWindow::on_clearButton_clicked()
+{
+    globalFlagCounter = 0;
+    StorePoint.clear();
+    RemoveColorAllButton(pushButMat_setting);
+    memset( Matrix, 0, sizeof(Matrix) );
+    EnableAllButton(pushButMat_setting);
+    PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
 }
