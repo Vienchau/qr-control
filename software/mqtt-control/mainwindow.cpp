@@ -534,8 +534,19 @@ void MainWindow::on_submitButton_clicked()
     int xEnd    = StorePoint.value(1).value(0);
     int yEnd    = StorePoint.value(1).value(1);
 
+
     AutoPath aPath;
     aPath.Counter = 0;
+
+    if (xBegin < xEnd){
+        aPath.xDelta = INCR;
+    } else if (xEnd < xBegin) {
+        aPath.xDelta = DECR;
+    } else if (xBegin == xEnd){
+        aPath.xDelta = EQUA;
+    }
+
+
 
     qDebug() << "xBegin = " << xBegin;
     qDebug() << "yBegin = " << yBegin;
@@ -547,8 +558,11 @@ void MainWindow::on_submitButton_clicked()
         for (int i = xBegin; i <= xEnd; i++)
         {
             SetBluePushButton(pushButMat_setting.value(i).value(yBegin));
-            aPath.Array[aPath.Counter] = GO_AHEAD;
-            aPath.Counter ++;
+            if (i < xEnd){
+                aPath.Array[aPath.Counter] = GO_AHEAD;
+                aPath.Counter ++;
+            }
+
         }
     }
     else if (xBegin > xEnd)
@@ -556,22 +570,59 @@ void MainWindow::on_submitButton_clicked()
         for (int i = xBegin; i >= xEnd; i--)
         {
             SetBluePushButton(pushButMat_setting.value(i).value(yBegin));
+            if (i > xEnd){
+                aPath.Array[aPath.Counter] = GO_AHEAD;
+                aPath.Counter ++;
+            }
         }
     }
+
     if (yBegin < yEnd)
     {
+        aPath.yDelta = INCR;
         for (int i = yBegin; i <= yEnd; i++)
         {
             SetBluePushButton(pushButMat_setting.value(xEnd).value(i));
+            if (aPath.xDelta == INCR){
+                aPath.Array[aPath.Counter] = TURN_LEFT;
+                aPath.Counter ++;
+                aPath.xDelta = TURNED;
+
+            } else if ((aPath.xDelta == DECR) || (aPath.xDelta == EQUA)) {
+                aPath.Array[aPath.Counter] = TURN_RIGHT;
+                aPath.Counter ++;
+                aPath.xDelta = TURNED;
+            } else if (aPath.xDelta == TURNED){
+                aPath.Array[aPath.Counter] = GO_AHEAD;
+                aPath.Counter ++;
+            }
+
         }
     }
     else if (yBegin > yEnd)
     {
+        aPath.yDelta = DECR;
         for (int i = yBegin; i >= yEnd; i--)
         {
             SetBluePushButton(pushButMat_setting.value(xEnd).value(i));
+            if (aPath.xDelta == INCR){
+                aPath.Array[aPath.Counter] = TURN_RIGHT;
+                aPath.Counter ++;
+                aPath.xDelta = TURNED;
+
+            } else if ((aPath.xDelta == DECR) || (aPath.xDelta == EQUA)) {
+                aPath.Array[aPath.Counter] = TURN_LEFT;
+                aPath.Counter ++;
+                aPath.xDelta = TURNED;
+            } else if (aPath.xDelta == TURNED){
+                aPath.Array[aPath.Counter] = GO_AHEAD;
+                aPath.Counter ++;
+            }
         }
     }
+    aPath.Array[aPath.Counter] = BREAK;
+    PrintThePath(aPath.Array);
+
 }
 
 void MainWindow::on_clearButton_clicked()

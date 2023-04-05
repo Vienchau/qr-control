@@ -7,17 +7,19 @@
 #define TURN_BACK   0x01
 #define TURN_RIGHT  0x02
 #define TURN_LEFT   0x03
+#define BREAK   0x04
 
 #define INCR        0x00
 #define DECR        0x01
-
+#define EQUA        0x02
+#define TURNED      0x03
 
 #include <QPushButton>
 #include <QMainWindow>
 
 typedef struct AutoPathArray
 {
-    int Array[7];
+    int Array[8];
     int xDelta;
     int yDelta;
     int Counter;
@@ -35,4 +37,5 @@ void EnableAllButton(QVector<QVector<QPushButton *>> matrixButton);
 
 void PrintTheMatrix(int (*matrix)[4]);
 void PrintTheStorePoint(QVector<QVector<int>> storePoint);
+void PrintThePath(int *Path);
 #endif // APPLICATION_DEF_H

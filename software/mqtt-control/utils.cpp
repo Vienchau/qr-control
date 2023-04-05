@@ -105,3 +105,17 @@ void RemoveColorAllButton(QVector<QVector<QPushButton *>> matrixButton){
         }
     }
 }
+
+void PrintThePath(int *Path){
+    for (int i = 0; Path[i] != BREAK; i ++) {
+        if (Path[i] == GO_AHEAD){
+            qDebug() << "GO AHEAD";
+        } else if (Path[i] == TURN_RIGHT){
+            qDebug() << "TURN RIGHT";
+        }else if (Path[i] == TURN_LEFT){
+            qDebug() << "TURN LEFT";
+        }else if (Path[i] == TURN_BACK){
+            qDebug() << "TURN BACK";
+        }
+    }
+}
