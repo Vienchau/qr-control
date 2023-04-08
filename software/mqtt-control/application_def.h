@@ -7,7 +7,7 @@
 #define TURN_BACK   0x01
 #define TURN_RIGHT  0x02
 #define TURN_LEFT   0x03
-#define BREAK   0x04
+#define BREAK       0x04
 
 #define INCR        0x00
 #define DECR        0x01

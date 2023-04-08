@@ -54,6 +54,11 @@ private slots:
 
     void on_clearButton_clicked();
 
+    void on_sendPathButton_clicked();
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private:
     Ui::MainWindow *ui;
 };

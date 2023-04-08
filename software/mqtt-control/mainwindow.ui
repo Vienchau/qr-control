@@ -1877,7 +1877,7 @@
      <rect>
       <x>40</x>
       <y>530</y>
-      <width>221</width>
+      <width>141</width>
       <height>41</height>
      </rect>
     </property>
@@ -1888,14 +1888,27 @@
    <widget class="QPushButton" name="clearButton">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>200</x>
       <y>530</y>
-      <width>221</width>
+      <width>141</width>
       <height>41</height>
      </rect>
     </property>
     <property name="text">
      <string>Clear</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="sendPathButton">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>530</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Send Path</string>
     </property>
    </widget>
   </widget>

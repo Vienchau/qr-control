@@ -3,12 +3,17 @@
 #include "flagChange.h"
 #include "handleflagchange.h"
 #include "application_def.h"
+#include "mosquitto.h"
+#include "ak/ak.h"
+#include "multitask.h"
 
 #include <QString>
 #include <QPalette>
 #include <QList>
 #include <QVector>
 #include <QThread>
+#include <QCloseEvent>
+
 
 // Global flag definition
 int globalFlagCounter = 0;
@@ -17,10 +22,11 @@ int Matrix[4][4] = {{0, 0, 0, 0},
                     {0, 0, 0, 0},
                     {0, 0, 0, 0}};
 
-FlagChange flagChangeIncrease, flagChangeDecrease;
-HandleFlagChange handleFlagChange, handleFlagChangeDecrease;
-QVector<QVector<QPushButton *>> pushButMat_setting, pushButMat_tracking;
-QVector<QVector<int>> StorePoint;
+FlagChange                      flagChangeIncrease  , flagChangeDecrease        ;
+HandleFlagChange                handleFlagChange    , handleFlagChangeDecrease  ;
+QVector<QVector<QPushButton *>> pushButMat_setting  , pushButMat_tracking       ;
+QVector<QVector<int>>           StorePoint                                      ;
+q_msg_t                         gw_task_app_capture_mailbox                     ;
 
 // TODO: Implement path generate to publish mqtt (note: using xDelta, yDelta).
 MainWindow::MainWindow(QWidget *parent)
@@ -40,14 +46,172 @@ MainWindow::MainWindow(QWidget *parent)
     pushButMat_tracking.push_back({ui->matButton21_2, ui->matButton22_2, ui->matButton23_2, ui->matButton24_2});
     pushButMat_tracking.push_back({ui->matButton31_2, ui->matButton32_2, ui->matButton33_2, ui->matButton34_2});
 
+    ak_init_tasks(AK_TASK_LIST_LEN, task_list_init);
+    ak_start_all_tasks();
+
     QObject::connect(&flagChangeIncrease, &FlagChange::signalIncreaseCounter, &handleFlagChange, &HandleFlagChange::receiveSignalIncrease);
     QObject::connect(&flagChangeDecrease, &FlagChange::signalDecreaseCounter, &handleFlagChangeDecrease, &HandleFlagChange::receiveSignalDecrease);
+
+
 }
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
+
 }
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    event->accept();
+}
+
+
+void* task_app_capture_entry(void){
+    wait_all_tasks_started();
+    AK_PRINT("PUBLISH TASK ENTRY SUCCESSFUL!\n");
+
+    while(1) {
+        ak_msg_t *msg;
+        msg = ak_msg_rev(TASK_APP_3);
+        switch(msg->header->sig){
+            case 0:
+                qDebug() << "Ping subscribe task!!";
+                break;
+            case 1:
+                qDebug() << (char*)(msg->header->payload);
+                break;
+            default:
+                break;
+        }
+        /* free message */
+
+        ak_msg_free(msg);
+    }
+
+    return (void *)0;
+}
+
+
+void MainWindow::on_submitButton_clicked()
+{
+    int xBegin  = StorePoint.value(0).value(0);
+    int yBegin  = StorePoint.value(0).value(1);
+    int xEnd    = StorePoint.value(1).value(0);
+    int yEnd    = StorePoint.value(1).value(1);
+
+
+    AutoPath aPath;
+    aPath.Counter = 0;
+
+    if (xBegin < xEnd){
+        aPath.xDelta = INCR;
+    } else if (xEnd < xBegin) {
+        aPath.xDelta = DECR;
+    } else if (xBegin == xEnd){
+        aPath.xDelta = EQUA;
+    }
+
+
+
+    qDebug() << "xBegin = " << xBegin;
+    qDebug() << "yBegin = " << yBegin;
+    qDebug() << "xEnd = "   << xEnd;
+    qDebug() << "yEnd = "   << yEnd;
+
+    if (xBegin < xEnd)
+    {
+        for (int i = xBegin; i <= xEnd; i++)
+        {
+            SetBluePushButton(pushButMat_setting.value(i).value(yBegin));
+            if (i < xEnd){
+                aPath.Array[aPath.Counter] = GO_AHEAD;
+                aPath.Counter ++;
+            }
+
+        }
+    }
+    else if (xBegin > xEnd)
+    {
+        for (int i = xBegin; i >= xEnd; i--)
+        {
+            SetBluePushButton(pushButMat_setting.value(i).value(yBegin));
+            if (i > xEnd){
+                aPath.Array[aPath.Counter] = GO_AHEAD;
+                aPath.Counter ++;
+            }
+        }
+    }
+
+    if (yBegin < yEnd)
+    {
+        aPath.yDelta = INCR;
+        for (int i = yBegin; i <= yEnd; i++)
+        {
+            SetBluePushButton(pushButMat_setting.value(xEnd).value(i));
+            if (aPath.xDelta == INCR){
+                aPath.Array[aPath.Counter] = TURN_LEFT;
+                aPath.Counter ++;
+                aPath.xDelta = TURNED;
+
+            } else if ((aPath.xDelta == DECR) || (aPath.xDelta == EQUA)) {
+                aPath.Array[aPath.Counter] = TURN_RIGHT;
+                aPath.Counter ++;
+                aPath.xDelta = TURNED;
+            } else if (aPath.xDelta == TURNED){
+                aPath.Array[aPath.Counter] = GO_AHEAD;
+                aPath.Counter ++;
+            }
+
+        }
+    }
+    else if (yBegin > yEnd)
+    {
+        aPath.yDelta = DECR;
+        for (int i = yBegin; i >= yEnd; i--)
+        {
+            SetBluePushButton(pushButMat_setting.value(xEnd).value(i));
+            if (aPath.xDelta == INCR){
+                aPath.Array[aPath.Counter] = TURN_RIGHT;
+                aPath.Counter ++;
+                aPath.xDelta = TURNED;
+
+            } else if ((aPath.xDelta == DECR) || (aPath.xDelta == EQUA)) {
+                aPath.Array[aPath.Counter] = TURN_LEFT;
+                aPath.Counter ++;
+                aPath.xDelta = TURNED;
+            } else if (aPath.xDelta == TURNED){
+                aPath.Array[aPath.Counter] = GO_AHEAD;
+                aPath.Counter ++;
+            }
+        }
+    }
+    aPath.Array[aPath.Counter] = BREAK;
+    PrintThePath(aPath.Array);
+
+}
+
+void MainWindow::on_clearButton_clicked()
+{
+    globalFlagCounter = 0;
+    StorePoint.clear();
+    RemoveColorAllButton(pushButMat_setting);
+    memset( Matrix, 0, sizeof(Matrix) );
+    EnableAllButton(pushButMat_setting);
+    PrintTheMatrix(Matrix);
+    PrintTheStorePoint(StorePoint);
+}
+
+void MainWindow::on_sendPathButton_clicked()
+{
+    char* test_msg = (char*)calloc(1, 50);
+    std::strcpy(test_msg, "Path submit");
+    task_post_dynamic_msg(TASK_APP_1, 0, (uint8_t*)test_msg, strlen(test_msg)+1);
+    free(test_msg);
+}
+
+
 
 void MainWindow::on_matButton01_clicked()
 {
@@ -527,111 +691,3 @@ void MainWindow::on_matButton34_clicked()
     PrintTheStorePoint(StorePoint);
 }
 
-void MainWindow::on_submitButton_clicked()
-{
-    int xBegin  = StorePoint.value(0).value(0);
-    int yBegin  = StorePoint.value(0).value(1);
-    int xEnd    = StorePoint.value(1).value(0);
-    int yEnd    = StorePoint.value(1).value(1);
-
-
-    AutoPath aPath;
-    aPath.Counter = 0;
-
-    if (xBegin < xEnd){
-        aPath.xDelta = INCR;
-    } else if (xEnd < xBegin) {
-        aPath.xDelta = DECR;
-    } else if (xBegin == xEnd){
-        aPath.xDelta = EQUA;
-    }
-
-
-
-    qDebug() << "xBegin = " << xBegin;
-    qDebug() << "yBegin = " << yBegin;
-    qDebug() << "xEnd = "   << xEnd;
-    qDebug() << "yEnd = "   << yEnd;
-
-    if (xBegin < xEnd)
-    {
-        for (int i = xBegin; i <= xEnd; i++)
-        {
-            SetBluePushButton(pushButMat_setting.value(i).value(yBegin));
-            if (i < xEnd){
-                aPath.Array[aPath.Counter] = GO_AHEAD;
-                aPath.Counter ++;
-            }
-
-        }
-    }
-    else if (xBegin > xEnd)
-    {
-        for (int i = xBegin; i >= xEnd; i--)
-        {
-            SetBluePushButton(pushButMat_setting.value(i).value(yBegin));
-            if (i > xEnd){
-                aPath.Array[aPath.Counter] = GO_AHEAD;
-                aPath.Counter ++;
-            }
-        }
-    }
-
-    if (yBegin < yEnd)
-    {
-        aPath.yDelta = INCR;
-        for (int i = yBegin; i <= yEnd; i++)
-        {
-            SetBluePushButton(pushButMat_setting.value(xEnd).value(i));
-            if (aPath.xDelta == INCR){
-                aPath.Array[aPath.Counter] = TURN_LEFT;
-                aPath.Counter ++;
-                aPath.xDelta = TURNED;
-
-            } else if ((aPath.xDelta == DECR) || (aPath.xDelta == EQUA)) {
-                aPath.Array[aPath.Counter] = TURN_RIGHT;
-                aPath.Counter ++;
-                aPath.xDelta = TURNED;
-            } else if (aPath.xDelta == TURNED){
-                aPath.Array[aPath.Counter] = GO_AHEAD;
-                aPath.Counter ++;
-            }
-
-        }
-    }
-    else if (yBegin > yEnd)
-    {
-        aPath.yDelta = DECR;
-        for (int i = yBegin; i >= yEnd; i--)
-        {
-            SetBluePushButton(pushButMat_setting.value(xEnd).value(i));
-            if (aPath.xDelta == INCR){
-                aPath.Array[aPath.Counter] = TURN_RIGHT;
-                aPath.Counter ++;
-                aPath.xDelta = TURNED;
-
-            } else if ((aPath.xDelta == DECR) || (aPath.xDelta == EQUA)) {
-                aPath.Array[aPath.Counter] = TURN_LEFT;
-                aPath.Counter ++;
-                aPath.xDelta = TURNED;
-            } else if (aPath.xDelta == TURNED){
-                aPath.Array[aPath.Counter] = GO_AHEAD;
-                aPath.Counter ++;
-            }
-        }
-    }
-    aPath.Array[aPath.Counter] = BREAK;
-    PrintThePath(aPath.Array);
-
-}
-
-void MainWindow::on_clearButton_clicked()
-{
-    globalFlagCounter = 0;
-    StorePoint.clear();
-    RemoveColorAllButton(pushButMat_setting);
-    memset( Matrix, 0, sizeof(Matrix) );
-    EnableAllButton(pushButMat_setting);
-    PrintTheMatrix(Matrix);
-    PrintTheStorePoint(StorePoint);
-}

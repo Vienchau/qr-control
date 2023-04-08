@@ -12,5 +12,6 @@ int main(int argc, char *argv[])
     w.setWindowTitle(GUI_NAME);
 
     w.show();
+
     return a.exec();
 }

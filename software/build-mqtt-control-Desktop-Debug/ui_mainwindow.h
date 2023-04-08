@@ -86,6 +86,7 @@ public:
     QRadioButton *radioButton;
     QPushButton *submitButton;
     QPushButton *clearButton;
+    QPushButton *sendPathButton;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -692,10 +693,13 @@ public:
         radioButton->setFont(font3);
         submitButton = new QPushButton(centralwidget);
         submitButton->setObjectName(QString::fromUtf8("submitButton"));
-        submitButton->setGeometry(QRect(40, 530, 221, 41));
+        submitButton->setGeometry(QRect(40, 530, 141, 41));
         clearButton = new QPushButton(centralwidget);
         clearButton->setObjectName(QString::fromUtf8("clearButton"));
-        clearButton->setGeometry(QRect(280, 530, 221, 41));
+        clearButton->setGeometry(QRect(200, 530, 141, 41));
+        sendPathButton = new QPushButton(centralwidget);
+        sendPathButton->setObjectName(QString::fromUtf8("sendPathButton"));
+        sendPathButton->setGeometry(QRect(360, 530, 141, 41));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -770,6 +774,7 @@ public:
         radioButton->setText(QCoreApplication::translate("MainWindow", "Auto Generate", nullptr));
         submitButton->setText(QCoreApplication::translate("MainWindow", "Submit", nullptr));
         clearButton->setText(QCoreApplication::translate("MainWindow", "Clear", nullptr));
+        sendPathButton->setText(QCoreApplication::translate("MainWindow", "Send Path", nullptr));
     } // retranslateUi
 
 };
