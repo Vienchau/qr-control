@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../mqtt-control -I. -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I. -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++
+INCPATH       = -I../mqtt-control -I. -I/home/vienchau/build/local/include -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I. -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake6
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = mqtt-control1.0.0
 DISTDIR = /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/.tmp/mqtt-control1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath-link,/usr/lib/x86_64-linux-gnu
-LIBS          = $(SUBLIBS) /usr/lib/x86_64-linux-gnu/libQt6Widgets.so /usr/lib/x86_64-linux-gnu/libQt6Gui.so /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so /usr/lib/x86_64-linux-gnu/libQt6Core.so -lpthread -lGLX -lOpenGL   
+LIBS          = $(SUBLIBS) -L/home/vienchau/build/local/lib/ -lmosquittopp -lak /usr/lib/x86_64-linux-gnu/libQt6Widgets.so /usr/lib/x86_64-linux-gnu/libQt6Gui.so /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so /usr/lib/x86_64-linux-gnu/libQt6Core.so -lpthread -lGLX -lOpenGL   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -56,6 +56,9 @@ SOURCES       = ../mqtt-control/flagChange.cpp \
 		../mqtt-control/handleflagchange.cpp \
 		../mqtt-control/main.cpp \
 		../mqtt-control/mainwindow.cpp \
+		../mqtt-control/multitask.cpp \
+		../mqtt-control/publish_task.cpp \
+		../mqtt-control/subscribe_task.cpp \
 		../mqtt-control/utils.cpp moc_flagChange.cpp \
 		moc_handleflagchange.cpp \
 		moc_mainwindow.cpp
@@ -63,6 +66,9 @@ OBJECTS       = flagChange.o \
 		handleflagchange.o \
 		main.o \
 		mainwindow.o \
+		multitask.o \
+		publish_task.o \
+		subscribe_task.o \
 		utils.o \
 		moc_flagChange.o \
 		moc_handleflagchange.o \
@@ -134,12 +140,19 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/lex.prf \
 		../mqtt-control/mqtt-control.pro ../mqtt-control/application_def.h \
+		../mqtt-control/capture_task.h \
 		../mqtt-control/flagChange.h \
 		../mqtt-control/handleflagchange.h \
-		../mqtt-control/mainwindow.h ../mqtt-control/flagChange.cpp \
+		../mqtt-control/mainwindow.h \
+		../mqtt-control/multitask.h \
+		../mqtt-control/publish_task.h \
+		../mqtt-control/subscribe_task.h ../mqtt-control/flagChange.cpp \
 		../mqtt-control/handleflagchange.cpp \
 		../mqtt-control/main.cpp \
 		../mqtt-control/mainwindow.cpp \
+		../mqtt-control/multitask.cpp \
+		../mqtt-control/publish_task.cpp \
+		../mqtt-control/subscribe_task.cpp \
 		../mqtt-control/utils.cpp
 QMAKE_TARGET  = mqtt-control
 DESTDIR       = 
@@ -308,8 +321,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../mqtt-control/application_def.h ../mqtt-control/flagChange.h ../mqtt-control/handleflagchange.h ../mqtt-control/mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../mqtt-control/flagChange.cpp ../mqtt-control/handleflagchange.cpp ../mqtt-control/main.cpp ../mqtt-control/mainwindow.cpp ../mqtt-control/utils.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../mqtt-control/application_def.h ../mqtt-control/capture_task.h ../mqtt-control/flagChange.h ../mqtt-control/handleflagchange.h ../mqtt-control/mainwindow.h ../mqtt-control/multitask.h ../mqtt-control/publish_task.h ../mqtt-control/subscribe_task.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../mqtt-control/flagChange.cpp ../mqtt-control/handleflagchange.cpp ../mqtt-control/main.cpp ../mqtt-control/mainwindow.cpp ../mqtt-control/multitask.cpp ../mqtt-control/publish_task.cpp ../mqtt-control/subscribe_task.cpp ../mqtt-control/utils.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../mqtt-control/mainwindow.ui $(DISTDIR)/
 
 
@@ -348,17 +361,17 @@ compiler_moc_header_clean:
 moc_flagChange.cpp: ../mqtt-control/flagChange.h \
 		moc_predefs.h \
 		/usr/lib/qt6/libexec/moc
-	/usr/lib/qt6/libexec/moc $(DEFINES) --include /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -I/home/vienchau/Desktop/ths/Qr-Control/software/mqtt-control -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../mqtt-control/flagChange.h -o moc_flagChange.cpp
+	/usr/lib/qt6/libexec/moc $(DEFINES) --include /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -I/home/vienchau/Desktop/ths/Qr-Control/software/mqtt-control -I/home/vienchau/build/local/include -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../mqtt-control/flagChange.h -o moc_flagChange.cpp
 
 moc_handleflagchange.cpp: ../mqtt-control/handleflagchange.h \
 		moc_predefs.h \
 		/usr/lib/qt6/libexec/moc
-	/usr/lib/qt6/libexec/moc $(DEFINES) --include /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -I/home/vienchau/Desktop/ths/Qr-Control/software/mqtt-control -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../mqtt-control/handleflagchange.h -o moc_handleflagchange.cpp
+	/usr/lib/qt6/libexec/moc $(DEFINES) --include /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -I/home/vienchau/Desktop/ths/Qr-Control/software/mqtt-control -I/home/vienchau/build/local/include -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../mqtt-control/handleflagchange.h -o moc_handleflagchange.cpp
 
 moc_mainwindow.cpp: ../mqtt-control/mainwindow.h \
 		moc_predefs.h \
 		/usr/lib/qt6/libexec/moc
-	/usr/lib/qt6/libexec/moc $(DEFINES) --include /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -I/home/vienchau/Desktop/ths/Qr-Control/software/mqtt-control -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../mqtt-control/mainwindow.h -o moc_mainwindow.cpp
+	/usr/lib/qt6/libexec/moc $(DEFINES) --include /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -I/home/vienchau/Desktop/ths/Qr-Control/software/mqtt-control -I/home/vienchau/build/local/include -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../mqtt-control/mainwindow.h -o moc_mainwindow.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -394,10 +407,56 @@ main.o: ../mqtt-control/main.cpp ../mqtt-control/mainwindow.h \
 mainwindow.o: ../mqtt-control/mainwindow.cpp ../mqtt-control/mainwindow.h \
 		ui_mainwindow.h \
 		../mqtt-control/flagChange.h \
-		../mqtt-control/handleflagchange.h
+		../mqtt-control/handleflagchange.h \
+		../mqtt-control/application_def.h \
+		/home/vienchau/build/local/include/mosquitto.h \
+		/home/vienchau/build/local/include/ak/ak.h \
+		/home/vienchau/build/local/include/ak/message.h \
+		/home/vienchau/build/local/include/ak/timer.h \
+		/home/vienchau/build/local/include/ak/port.h \
+		/home/vienchau/build/local/include/ak/ak_dbg.h \
+		../mqtt-control/multitask.h \
+		../mqtt-control/subscribe_task.h \
+		../mqtt-control/publish_task.h \
+		../mqtt-control/capture_task.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../mqtt-control/mainwindow.cpp
 
-utils.o: ../mqtt-control/utils.cpp 
+multitask.o: ../mqtt-control/multitask.cpp ../mqtt-control/multitask.h \
+		/home/vienchau/build/local/include/ak/ak.h \
+		/home/vienchau/build/local/include/ak/message.h \
+		/home/vienchau/build/local/include/ak/timer.h \
+		/home/vienchau/build/local/include/ak/port.h \
+		/home/vienchau/build/local/include/ak/ak_dbg.h \
+		../mqtt-control/subscribe_task.h \
+		../mqtt-control/publish_task.h \
+		../mqtt-control/capture_task.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o multitask.o ../mqtt-control/multitask.cpp
+
+publish_task.o: ../mqtt-control/publish_task.cpp ../mqtt-control/publish_task.h \
+		/home/vienchau/build/local/include/ak/ak.h \
+		/home/vienchau/build/local/include/ak/message.h \
+		/home/vienchau/build/local/include/ak/timer.h \
+		/home/vienchau/build/local/include/ak/port.h \
+		/home/vienchau/build/local/include/ak/ak_dbg.h \
+		../mqtt-control/multitask.h \
+		../mqtt-control/subscribe_task.h \
+		../mqtt-control/capture_task.h \
+		/home/vienchau/build/local/include/mosquitto.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o publish_task.o ../mqtt-control/publish_task.cpp
+
+subscribe_task.o: ../mqtt-control/subscribe_task.cpp ../mqtt-control/subscribe_task.h \
+		/home/vienchau/build/local/include/ak/ak.h \
+		/home/vienchau/build/local/include/ak/message.h \
+		/home/vienchau/build/local/include/ak/timer.h \
+		/home/vienchau/build/local/include/ak/port.h \
+		/home/vienchau/build/local/include/ak/ak_dbg.h \
+		../mqtt-control/multitask.h \
+		../mqtt-control/publish_task.h \
+		../mqtt-control/capture_task.h \
+		/home/vienchau/build/local/include/mosquitto.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o subscribe_task.o ../mqtt-control/subscribe_task.cpp
+
+utils.o: ../mqtt-control/utils.cpp ../mqtt-control/application_def.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o utils.o ../mqtt-control/utils.cpp
 
 moc_flagChange.o: moc_flagChange.cpp 
