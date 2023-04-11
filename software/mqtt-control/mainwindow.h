@@ -14,7 +14,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
 private slots:
     void on_matButton01_clicked();
 
@@ -48,13 +47,18 @@ private slots:
 
     void on_matButton34_clicked();
 
-    void on_matButton01_released();
-
     void on_submitButton_clicked();
 
     void on_clearButton_clicked();
 
     void on_sendPathButton_clicked();
+
+    void update_taskTextBrowser(QString text);
+
+
+    void on_connectMqttButton_clicked();
+
+    void on_disconnectMqttButton_clicked();
 
 protected:
     void closeEvent(QCloseEvent *event) override;

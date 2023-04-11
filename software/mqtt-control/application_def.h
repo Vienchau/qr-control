@@ -14,8 +14,17 @@
 #define EQUA        0x02
 #define TURNED      0x03
 
+#define ALERT_HTML  "<font color=\"#ff1a1a\">"
+#define DATA_HTML   "<font color=\"#008040\">"
+#define INFO_HTML   "<font color=\"#0040ff\">"
+#define END_HTML    "</font><br>"
+
+
 #include <QPushButton>
 #include <QMainWindow>
+#include <QString>
+#include <QTime>
+#include "multitask.h"
 
 typedef struct AutoPathArray
 {
@@ -38,4 +47,6 @@ void EnableAllButton(QVector<QVector<QPushButton *>> matrixButton);
 void PrintTheMatrix(int (*matrix)[4]);
 void PrintTheStorePoint(QVector<QVector<int>> storePoint);
 void PrintThePath(int *Path);
+QString GetTheTimeStamp();
+QString Logger(int caseLogger, QString info);
 #endif // APPLICATION_DEF_H

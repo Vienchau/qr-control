@@ -16,7 +16,7 @@ CC            = gcc
 CXX           = g++
 DEFINES       = -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -Wno-missing-field-initializers -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I../mqtt-control -I. -I/home/vienchau/build/local/include -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I. -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake6
 DEL_FILE      = rm -f
@@ -59,9 +59,11 @@ SOURCES       = ../mqtt-control/flagChange.cpp \
 		../mqtt-control/multitask.cpp \
 		../mqtt-control/publish_task.cpp \
 		../mqtt-control/subscribe_task.cpp \
+		../mqtt-control/text_browser.cpp \
 		../mqtt-control/utils.cpp moc_flagChange.cpp \
 		moc_handleflagchange.cpp \
-		moc_mainwindow.cpp
+		moc_mainwindow.cpp \
+		moc_text_browser.cpp
 OBJECTS       = flagChange.o \
 		handleflagchange.o \
 		main.o \
@@ -69,10 +71,12 @@ OBJECTS       = flagChange.o \
 		multitask.o \
 		publish_task.o \
 		subscribe_task.o \
+		text_browser.o \
 		utils.o \
 		moc_flagChange.o \
 		moc_handleflagchange.o \
-		moc_mainwindow.o
+		moc_mainwindow.o \
+		moc_text_browser.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt6/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt6/mkspecs/common/linux.conf \
@@ -146,13 +150,15 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/spec_pre.prf \
 		../mqtt-control/mainwindow.h \
 		../mqtt-control/multitask.h \
 		../mqtt-control/publish_task.h \
-		../mqtt-control/subscribe_task.h ../mqtt-control/flagChange.cpp \
+		../mqtt-control/subscribe_task.h \
+		../mqtt-control/text_browser.h ../mqtt-control/flagChange.cpp \
 		../mqtt-control/handleflagchange.cpp \
 		../mqtt-control/main.cpp \
 		../mqtt-control/mainwindow.cpp \
 		../mqtt-control/multitask.cpp \
 		../mqtt-control/publish_task.cpp \
 		../mqtt-control/subscribe_task.cpp \
+		../mqtt-control/text_browser.cpp \
 		../mqtt-control/utils.cpp
 QMAKE_TARGET  = mqtt-control
 DESTDIR       = 
@@ -321,8 +327,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../mqtt-control/application_def.h ../mqtt-control/capture_task.h ../mqtt-control/flagChange.h ../mqtt-control/handleflagchange.h ../mqtt-control/mainwindow.h ../mqtt-control/multitask.h ../mqtt-control/publish_task.h ../mqtt-control/subscribe_task.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../mqtt-control/flagChange.cpp ../mqtt-control/handleflagchange.cpp ../mqtt-control/main.cpp ../mqtt-control/mainwindow.cpp ../mqtt-control/multitask.cpp ../mqtt-control/publish_task.cpp ../mqtt-control/subscribe_task.cpp ../mqtt-control/utils.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../mqtt-control/application_def.h ../mqtt-control/capture_task.h ../mqtt-control/flagChange.h ../mqtt-control/handleflagchange.h ../mqtt-control/mainwindow.h ../mqtt-control/multitask.h ../mqtt-control/publish_task.h ../mqtt-control/subscribe_task.h ../mqtt-control/text_browser.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../mqtt-control/flagChange.cpp ../mqtt-control/handleflagchange.cpp ../mqtt-control/main.cpp ../mqtt-control/mainwindow.cpp ../mqtt-control/multitask.cpp ../mqtt-control/publish_task.cpp ../mqtt-control/subscribe_task.cpp ../mqtt-control/text_browser.cpp ../mqtt-control/utils.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../mqtt-control/mainwindow.ui $(DISTDIR)/
 
 
@@ -353,11 +359,11 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/data/dummy.cpp
-	g++ -pipe -g -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/data/dummy.cpp
+	g++ -pipe -Wno-missing-field-initializers -g -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_flagChange.cpp moc_handleflagchange.cpp moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_flagChange.cpp moc_handleflagchange.cpp moc_mainwindow.cpp moc_text_browser.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_flagChange.cpp moc_handleflagchange.cpp moc_mainwindow.cpp
+	-$(DEL_FILE) moc_flagChange.cpp moc_handleflagchange.cpp moc_mainwindow.cpp moc_text_browser.cpp
 moc_flagChange.cpp: ../mqtt-control/flagChange.h \
 		moc_predefs.h \
 		/usr/lib/qt6/libexec/moc
@@ -372,6 +378,11 @@ moc_mainwindow.cpp: ../mqtt-control/mainwindow.h \
 		moc_predefs.h \
 		/usr/lib/qt6/libexec/moc
 	/usr/lib/qt6/libexec/moc $(DEFINES) --include /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -I/home/vienchau/Desktop/ths/Qr-Control/software/mqtt-control -I/home/vienchau/build/local/include -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../mqtt-control/mainwindow.h -o moc_mainwindow.cpp
+
+moc_text_browser.cpp: ../mqtt-control/text_browser.h \
+		moc_predefs.h \
+		/usr/lib/qt6/libexec/moc
+	/usr/lib/qt6/libexec/moc $(DEFINES) --include /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt6/mkspecs/linux-g++ -I/home/vienchau/Desktop/ths/Qr-Control/software/mqtt-control -I/home/vienchau/build/local/include -I/usr/include/x86_64-linux-gnu/qt6 -I/usr/include/x86_64-linux-gnu/qt6/QtWidgets -I/usr/include/x86_64-linux-gnu/qt6/QtGui -I/usr/include/x86_64-linux-gnu/qt6/QtCore -I. -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../mqtt-control/text_browser.h -o moc_text_browser.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -418,7 +429,8 @@ mainwindow.o: ../mqtt-control/mainwindow.cpp ../mqtt-control/mainwindow.h \
 		../mqtt-control/multitask.h \
 		../mqtt-control/subscribe_task.h \
 		../mqtt-control/publish_task.h \
-		../mqtt-control/capture_task.h
+		../mqtt-control/capture_task.h \
+		../mqtt-control/text_browser.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../mqtt-control/mainwindow.cpp
 
 multitask.o: ../mqtt-control/multitask.cpp ../mqtt-control/multitask.h \
@@ -456,6 +468,9 @@ subscribe_task.o: ../mqtt-control/subscribe_task.cpp ../mqtt-control/subscribe_t
 		/home/vienchau/build/local/include/mosquitto.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o subscribe_task.o ../mqtt-control/subscribe_task.cpp
 
+text_browser.o: ../mqtt-control/text_browser.cpp ../mqtt-control/text_browser.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o text_browser.o ../mqtt-control/text_browser.cpp
+
 utils.o: ../mqtt-control/utils.cpp ../mqtt-control/application_def.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o utils.o ../mqtt-control/utils.cpp
 
@@ -467,6 +482,9 @@ moc_handleflagchange.o: moc_handleflagchange.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
+
+moc_text_browser.o: moc_text_browser.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_text_browser.o moc_text_browser.cpp
 
 ####### Install
 

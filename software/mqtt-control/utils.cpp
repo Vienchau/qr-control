@@ -119,3 +119,21 @@ void PrintThePath(int *Path){
         }
     }
 }
+
+QString GetTheTimeStamp(){
+    QTime currentTime = QTime::currentTime();
+    return currentTime.toString(Qt::ISODateWithMs);
+}
+
+QString Logger(int caseLogger, QString info){
+    switch (caseLogger) {
+    case INFO:
+        return QString::fromStdString(INFO_HTML)   + "[INFO_LOG]: "       + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
+    case WARNING:
+        return QString::fromStdString(ALERT_HTML)  + "[WARNING_LOG]: "    + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
+    case DATA:
+        return QString::fromStdString(DATA_HTML)   + "[DATA_LOG]: "       + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
+    default:
+        return QString::fromStdString(END_HTML)    + "[WARNING_LOG]: "    + GetTheTimeStamp() + "   " + "Logger fail!" + QString::fromStdString(END_HTML);
+    }
+}

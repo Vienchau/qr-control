@@ -6,6 +6,7 @@
 #include "mosquitto.h"
 #include "ak/ak.h"
 #include "multitask.h"
+#include "text_browser.h"
 
 #include <QString>
 #include <QPalette>
@@ -13,22 +14,25 @@
 #include <QVector>
 #include <QThread>
 #include <QCloseEvent>
-
+#include <QScrollBar>
 
 // Global flag definition
-int globalFlagCounter = 0;
-int Matrix[4][4] = {{0, 0, 0, 0},
-                    {0, 0, 0, 0},
-                    {0, 0, 0, 0},
-                    {0, 0, 0, 0}};
+int globalFlagCounter   = 0;
+int Matrix[4][4]        = {     {0, 0, 0, 0}    ,
+                                {0, 0, 0, 0}    ,
+                                {0, 0, 0, 0}    ,
+                                {0, 0, 0, 0}    };
 
+// Signals and slot define
 FlagChange                      flagChangeIncrease  , flagChangeDecrease        ;
 HandleFlagChange                handleFlagChange    , handleFlagChangeDecrease  ;
+TextBrowser                     textBrowser                                     ;
+
 QVector<QVector<QPushButton *>> pushButMat_setting  , pushButMat_tracking       ;
 QVector<QVector<int>>           StorePoint                                      ;
 q_msg_t                         gw_task_app_capture_mailbox                     ;
 
-// TODO: Implement path generate to publish mqtt (note: using xDelta, yDelta).
+// TODO: Implement ak task worker
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
@@ -46,13 +50,13 @@ MainWindow::MainWindow(QWidget *parent)
     pushButMat_tracking.push_back({ui->matButton21_2, ui->matButton22_2, ui->matButton23_2, ui->matButton24_2});
     pushButMat_tracking.push_back({ui->matButton31_2, ui->matButton32_2, ui->matButton33_2, ui->matButton34_2});
 
+    /* AK-TASK IMPLEMENT */
     ak_init_tasks(AK_TASK_LIST_LEN, task_list_init);
-    ak_start_all_tasks();
+    ak_start_task(TASK_APP_3);
 
-    QObject::connect(&flagChangeIncrease, &FlagChange::signalIncreaseCounter, &handleFlagChange, &HandleFlagChange::receiveSignalIncrease);
-    QObject::connect(&flagChangeDecrease, &FlagChange::signalDecreaseCounter, &handleFlagChangeDecrease, &HandleFlagChange::receiveSignalDecrease);
-
-
+    QObject::connect(&flagChangeIncrease, &FlagChange   ::signalIncreaseCounter     , &handleFlagChange         , &HandleFlagChange ::receiveSignalIncrease );
+    QObject::connect(&flagChangeDecrease, &FlagChange   ::signalDecreaseCounter     , &handleFlagChangeDecrease , &HandleFlagChange ::receiveSignalDecrease );
+    QObject::connect(&textBrowser       , &TextBrowser  ::signalTaskTextBrowser     , this                      , &MainWindow       ::update_taskTextBrowser);
 }
 
 
@@ -64,24 +68,29 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+
     event->accept();
 }
 
 
 void* task_app_capture_entry(void){
-    wait_all_tasks_started();
-    AK_PRINT("PUBLISH TASK ENTRY SUCCESSFUL!\n");
-
+//    wait_all_tasks_started();
+    textBrowser.emitTaskTextBrowser(Logger(INFO, QString::fromStdString(CAP_ENTRY)));
     while(1) {
         ak_msg_t *msg;
         msg = ak_msg_rev(TASK_APP_3);
+        QString insertText;
         switch(msg->header->sig){
-            case 0:
-                qDebug() << "Ping subscribe task!!";
+            case INFO:
+                insertText = QString::fromStdString((char*)(msg->header->payload));
+                textBrowser.emitTaskTextBrowser(Logger(INFO, insertText));
                 break;
-            case 1:
-                qDebug() << (char*)(msg->header->payload);
-                break;
+            case WARNING:
+                insertText = QString::fromStdString((char*)(msg->header->payload));
+                textBrowser.emitTaskTextBrowser(Logger(WARNING, insertText));
+            case DATA:
+                insertText = QString::fromStdString((char*)(msg->header->payload));
+                textBrowser.emitTaskTextBrowser(Logger(DATA, insertText));
             default:
                 break;
         }
@@ -190,6 +199,12 @@ void MainWindow::on_submitButton_clicked()
     aPath.Array[aPath.Counter] = BREAK;
     PrintThePath(aPath.Array);
 
+}
+
+void MainWindow::update_taskTextBrowser(QString text){
+    ui -> taskTextBrowser->insertHtml(text);
+    QScrollBar *sb = ui->taskTextBrowser->verticalScrollBar();
+    sb->setValue(sb->maximum());
 }
 
 void MainWindow::on_clearButton_clicked()
@@ -689,5 +704,19 @@ void MainWindow::on_matButton34_clicked()
 
     PrintTheMatrix(Matrix);
     PrintTheStorePoint(StorePoint);
+}
+
+
+
+void MainWindow::on_connectMqttButton_clicked()
+{
+    ak_start_task(TASK_APP_1);
+}
+
+
+void MainWindow::on_disconnectMqttButton_clicked()
+{
+//    ak_stop_task(TASK_APP_1);
+    task_post_pure_msg(TASK_APP_1, 1);
 }
 

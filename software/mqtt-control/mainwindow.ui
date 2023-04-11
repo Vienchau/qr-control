@@ -732,14 +732,21 @@
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
-    <widget class="QTextBrowser" name="textBrowser">
+    <widget class="QTextBrowser" name="taskTextBrowser">
      <property name="geometry">
       <rect>
        <x>20</x>
        <y>40</y>
        <width>461</width>
-       <height>121</height>
+       <height>111</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
      </property>
     </widget>
    </widget>
@@ -1732,7 +1739,7 @@
       <string>MQTT Connection</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_7">
+    <widget class="QPushButton" name="connectMqttButton">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1753,7 +1760,7 @@
       <string>Connect</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_8">
+    <widget class="QPushButton" name="disconnectMqttButton">
      <property name="geometry">
       <rect>
        <x>220</x>
