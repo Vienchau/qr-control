@@ -10,4 +10,9 @@ void TextBrowser::emitTaskTextBrowser(QString text)
     emit signalTaskTextBrowser(text);
 }
 
+void TextBrowser::emitFeedbackTextBrowser(QString text)
+{
+    emit signalFeeadBackTextBrowser(text);
+}
+
 

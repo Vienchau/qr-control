@@ -41,10 +41,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->submitButton->setEnabled(false);
-    ui->clearButton->setEnabled(false);
-    ui->sendPathButton->setEnabled(false);
-
+    ui_Init();
     qDebug("into main!");
 
     // PushButton list init
@@ -62,11 +59,13 @@ MainWindow::MainWindow(QWidget *parent)
     /* AK-TASK IMPLEMENT */
     ak_init_tasks(AK_TASK_LIST_LEN, task_list_init);
     ak_start_task(TASK_APP_3);
-//    ak_start_task(TASK_APP_2);
 
-    QObject::connect(&flagChangeIncrease, &FlagChange   ::signalIncreaseCounter     , &handleFlagChange         , &HandleFlagChange ::receiveSignalIncrease );
-    QObject::connect(&flagChangeDecrease, &FlagChange   ::signalDecreaseCounter     , &handleFlagChangeDecrease , &HandleFlagChange ::receiveSignalDecrease );
-    QObject::connect(&textBrowser       , &TextBrowser  ::signalTaskTextBrowser     , this                      , &MainWindow       ::update_taskTextBrowser);
+
+
+    QObject::connect(&flagChangeIncrease, &FlagChange   ::signalIncreaseCounter     , &handleFlagChange         , &HandleFlagChange ::receiveSignalIncrease     );
+    QObject::connect(&flagChangeDecrease, &FlagChange   ::signalDecreaseCounter     , &handleFlagChangeDecrease , &HandleFlagChange ::receiveSignalDecrease     );
+    QObject::connect(&textBrowser       , &TextBrowser  ::signalTaskTextBrowser     , this                      , &MainWindow       ::update_taskTextBrowser    );
+    QObject::connect(&textBrowser       , &TextBrowser  ::signalFeeadBackTextBrowser, this                      , &MainWindow       ::update_feedBackTextBrowser);
 }
 
 
@@ -82,9 +81,16 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
+void MainWindow::ui_Init() {
+    ui->submitButton        ->setEnabled(false);
+    ui->clearButton         ->setEnabled(false);
+    ui->sendPathButton      ->setEnabled(false);
+    ui->radioAuto           ->setChecked(true);
+    ui->agvSelectComboBox   ->addItems({"AGV_01", "AGV_02", "AGV_03"});
+    ui->agvSelectComboBox   ->setCurrentIndex(0);
+}
 
 void* task_app_capture_entry(void){
-//    wait_all_tasks_started();
     textBrowser.emitTaskTextBrowser(Logger(INFO_PUB, QString::fromStdString(CAP_ENTRY)));
     while(1) {
         ak_msg_t *msg;
@@ -98,15 +104,23 @@ void* task_app_capture_entry(void){
             case WARNING_PUB:
                 insertText = QString::fromStdString((char*)(msg->header->payload));
                 textBrowser.emitTaskTextBrowser(Logger(WARNING_PUB, insertText));
+                break;
             case DATA_PUB:
                 insertText = QString::fromStdString((char*)(msg->header->payload));
                 textBrowser.emitTaskTextBrowser(Logger(DATA_PUB, insertText));
+                break;
             case INFO_SUB:
-
-
+                insertText = QString::fromStdString((char*)(msg->header->payload));
+                textBrowser.emitFeedbackTextBrowser(Logger(INFO_SUB, insertText));
+                break;
             case WARNING_SUB:
-
+                insertText = QString::fromStdString((char*)(msg->header->payload));
+                textBrowser.emitFeedbackTextBrowser(Logger(WARNING_SUB, insertText));
+                break;
             case DATA_SUB:
+                insertText = QString::fromStdString((char*)(msg->header->payload));
+                textBrowser.emitFeedbackTextBrowser(Logger(DATA_SUB, insertText));
+                break;
             default:
                 break;
         }
@@ -235,6 +249,13 @@ void MainWindow::update_taskTextBrowser(QString text){
     sb->setValue(sb->maximum());
 }
 
+void MainWindow::update_feedBackTextBrowser(QString text){
+    ui -> feedbackTextBrowser -> insertHtml(text);
+    QScrollBar *sb = ui->feedbackTextBrowser->verticalScrollBar();
+    sb->setValue(sb->maximum());
+}
+
+
 void MainWindow::on_clearButton_clicked()
 {
     globalFlagCounter = 0;
@@ -250,8 +271,6 @@ void MainWindow::on_clearButton_clicked()
 
 void MainWindow::on_sendPathButton_clicked()
 {
-    //task_post_pure_msg(TASK_APP_1, PUBLISH_MSG);
-    //task_post_dynamic_msg(TASK_APP_1, PUBLISH_MSG,(uint8_t*)PING_TASK_2, strlen(PING_TASK_2)+1);
     char buffer[18];
     std::sprintf(buffer, "%d,%d,%d,%d,%d,%d,%d|%d,%d",
                                                 GlobalPath[0],
@@ -264,23 +283,44 @@ void MainWindow::on_sendPathButton_clicked()
                                                 GlobalRotate[0],
                                                 GlobalRotate[1]);
     qDebug() << buffer ;
-    task_post_dynamic_msg(TASK_APP_1, PUBLISH_MSG,(uint8_t*)buffer, strlen(buffer)+1);
+    task_post_dynamic_msg(TASK_APP_1, PUBLISH_SIG,(uint8_t*)buffer, strlen(buffer)+1);
 }
 
 void MainWindow::on_connectMqttButton_clicked()
 {
-    EnableAllButton(pushButMat_setting);
+    QString initTopic = (ui->agvSelectComboBox->currentText());
+
     ak_start_task(TASK_APP_1);
+    QString PubTopic = "AGV/" + initTopic + "/control";
+    char* Pub = PubTopic.toLocal8Bit().data();
+    task_post_dynamic_msg(TASK_APP_1, SET_TOPIC_SIG, (uint8_t*)Pub, strlen(Pub)+1);
+
+
+    ak_start_task(TASK_APP_2);
+    QString SubTopic = "AGV/" + initTopic + "/feedback";
+    char* Sub = SubTopic.toLocal8Bit().data();
+    task_post_dynamic_msg(TASK_APP_2, SUBSCRIBE_SIG, (uint8_t*)Sub, strlen(Sub)+1);
+
+    EnableAllButton(pushButMat_setting);
     ui->submitButton->setEnabled(true);
     ui -> connectMqttButton->setEnabled(false);
+    ui->agvSelectComboBox->setEnabled(false);
+    ui->radioAuto ->setEnabled(false);
+    ui->radioManual->setEnabled(false);
+
 }
 
 
 void MainWindow::on_disconnectMqttButton_clicked()
 {
     task_post_pure_msg(TASK_APP_1, STOP_TASK);
+    task_post_pure_msg(TASK_APP_2, STOP_TASK);
+
     ui->submitButton->setEnabled(false);
     ui -> connectMqttButton->setEnabled(true);
+    ui->agvSelectComboBox->setEnabled(true);
+    ui->radioAuto ->setEnabled(true);
+    ui->radioManual->setEnabled(true);
     DisableAllButton(pushButMat_setting, MatrixSample);
 }
 

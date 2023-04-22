@@ -144,14 +144,24 @@ QString GetTheTimeStamp(){
 }
 
 QString Logger(int caseLogger, QString info){
-    switch (caseLogger) {
-    case INFO_PUB:
-        return QString::fromStdString(INFO_HTML)   + "[INFO_LOG]:"      + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
-    case WARNING_PUB:
-        return QString::fromStdString(ALERT_HTML)  + "[WARN_LOG]:"      + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
-    case DATA_PUB:
-        return QString::fromStdString(DATA_HTML)   + "[DATA_LOG]:"      + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
+    int checkCase = NOTHING;
+    if(caseLogger == INFO_PUB || caseLogger == INFO_SUB){
+        checkCase = INFO;
+    } else if (caseLogger == WARNING_SUB || caseLogger == WARNING_PUB){
+        checkCase = WARING;
+    } else if (caseLogger == DATA_SUB || caseLogger == DATA_PUB) {
+        checkCase = DATA;
+    }
+
+
+    switch (checkCase) {
+    case (INFO):
+        return QString::fromStdString(INFO_HTML)   + "[INFO_LOG]:"      + GetTheTimeStamp() +   "   " + info           + QString::fromStdString(END_HTML);
+    case WARING:
+        return QString::fromStdString(ALERT_HTML)  + "[WARN_LOG]:"      + GetTheTimeStamp() +   "   " + info           + QString::fromStdString(END_HTML);
+    case DATA:
+        return QString::fromStdString(DATA_HTML)   + "[DATA_LOG]:"      + GetTheTimeStamp() +   "   " + info           + QString::fromStdString(END_HTML);
     default:
-        return QString::fromStdString(END_HTML)    + "[WARN_LOG]:"      + GetTheTimeStamp() + "   " + "Logger fail!" + QString::fromStdString(END_HTML);
+        return QString::fromStdString(ALERT_HTML)    + "[WARN_LOG]:"    + GetTheTimeStamp() +   "   " + "Logger fail!" + QString::fromStdString(END_HTML);
     }
 }

@@ -55,15 +55,20 @@ private slots:
 
     void update_taskTextBrowser(QString text);
 
+    void update_feedBackTextBrowser(QString text);
 
     void on_connectMqttButton_clicked();
 
     void on_disconnectMqttButton_clicked();
 
+
+//    void on_agvSelectComboBox_currentIndexChanged(int index);
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
+    void ui_Init();
     Ui::MainWindow *ui;
 };
 #endif // MAINWINDOW_H

@@ -37,15 +37,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_ranges 00000c90  00000000  00000000  00032a48  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_macro  00021eb6  00000000  00000000  000336d8  2**0
+ 17 .debug_macro  00021ebc  00000000  00000000  000336d8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   000107f7  00000000  00000000  0005558e  2**0
+ 18 .debug_line   000107f7  00000000  00000000  00055594  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000cba87  00000000  00000000  00065d85  2**0
+ 19 .debug_str    000cbaaa  00000000  00000000  00065d8b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .comment      00000050  00000000  00000000  0013180c  2**0
+ 20 .comment      00000050  00000000  00000000  00131835  2**0
                   CONTENTS, READONLY
- 21 .debug_frame  00003b5c  00000000  00000000  0013185c  2**2
+ 21 .debug_frame  00003b5c  00000000  00000000  00131888  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1150,7 +1150,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
  8000b9a:	f000 fc5b 	bl	8001454 <PIDReset>
 
 
-	    if(!strcmp(dataBuffer, "1111,1111,1111,1,1")){
+	    if(!strcmp(dataBuffer, ARRAY_CHECKER)){
  8000b9e:	492e      	ldr	r1, [pc, #184]	; (8000c58 <HAL_UART_RxCpltCallback+0xf4>)
  8000ba0:	482e      	ldr	r0, [pc, #184]	; (8000c5c <HAL_UART_RxCpltCallback+0xf8>)
  8000ba2:	f7ff fb11 	bl	80001c8 <strcmp>

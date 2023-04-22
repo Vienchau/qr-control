@@ -56,6 +56,7 @@
 
 /* USER CODE BEGIN PV */
 #define SAMPLE_STRING "0360,0045,0045,1,0"
+#define ARRAY_CHECKER "1111,1111,1111,1,1"
 #define MAX_LEN_DATA 18
 void SerialInit(void);
 void SerialAcceptReceive(void);
@@ -256,7 +257,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	    PIDReset(&tPID_2);
 
 
-	    if(!strcmp(dataBuffer, "1111,1111,1111,1,1")){
+	    if(!strcmp(dataBuffer, ARRAY_CHECKER)){
 	    	HAL_UART_Transmit(&huart2, (uint8_t *)statusOK, sizeof(statusOK), 1000);
 	    }
 	    else {

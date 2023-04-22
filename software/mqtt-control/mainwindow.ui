@@ -1504,7 +1504,7 @@
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
-    <widget class="QTextBrowser" name="textBrowser_2">
+    <widget class="QTextBrowser" name="feedbackTextBrowser">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1513,12 +1513,19 @@
        <height>171</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_5">
     <property name="geometry">
      <rect>
-      <x>1050</x>
+      <x>1040</x>
       <y>20</y>
       <width>421</width>
       <height>731</height>
@@ -1559,7 +1566,7 @@
       <string>Reset STM32</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="agvSelectComboBox">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1576,21 +1583,6 @@
        <kerning>false</kerning>
       </font>
      </property>
-     <item>
-      <property name="text">
-       <string>AGV 01</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>AGV 02</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>AGV 03</string>
-      </property>
-     </item>
     </widget>
     <widget class="QLabel" name="label">
      <property name="geometry">
@@ -1835,7 +1827,7 @@
      <property name="title">
       <string>Path Selection</string>
      </property>
-     <widget class="QRadioButton" name="radioButton_2">
+     <widget class="QRadioButton" name="radioManual">
       <property name="geometry">
        <rect>
         <x>240</x>
@@ -1856,7 +1848,7 @@
        <string>Manual Set</string>
       </property>
      </widget>
-     <widget class="QRadioButton" name="radioButton">
+     <widget class="QRadioButton" name="radioAuto">
       <property name="geometry">
        <rect>
         <x>50</x>

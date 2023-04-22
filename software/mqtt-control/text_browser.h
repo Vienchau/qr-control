@@ -11,10 +11,11 @@ public:
     TextBrowser();
 
     void emitTaskTextBrowser(QString text);
+    void emitFeedbackTextBrowser(QString text);
 
 signals:
     void signalTaskTextBrowser(QString text);
-
+    void signalFeeadBackTextBrowser(QString text);
 };
 
 #endif // TEXT_BROWSER_H
