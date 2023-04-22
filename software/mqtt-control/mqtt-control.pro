@@ -35,7 +35,9 @@ FORMS += \
 
 INCLUDEPATH += /home/vienchau/build/local/include
 LIBS += -L/home/vienchau/build/local/lib/
-LIBS += -lmosquittopp
+LIBS += -lmosquitto
+LIBS += -lssl
+LIBS += -lcrypto
 LIBS += -lak
 
 # Default rules for deployment.

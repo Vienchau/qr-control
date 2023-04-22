@@ -17,13 +17,17 @@
 #include <QScrollBar>
 
 // Global flag definition
-int globalFlagCounter   = 0;
-int Matrix[4][4]        = {     {0, 0, 0, 0}    ,
-                                {0, 0, 0, 0}    ,
-                                {0, 0, 0, 0}    ,
-                                {0, 0, 0, 0}    };
-
-// Signals and slot define
+int                             globalFlagCounter   = 0;
+int                             Matrix[4][4]        = {     {0, 0, 0, 0}    ,
+                                                            {0, 0, 0, 0}    ,
+                                                            {0, 0, 0, 0}    ,
+                                                            {0, 0, 0, 0}    }   ;
+int                             MatrixSample[4][4]        = {     {0, 0, 0, 0}    ,
+                                                            {0, 0, 0, 0}    ,
+                                                            {0, 0, 0, 0}    ,
+                                                            {0, 0, 0, 0}    }   ;
+std::array<int,7>               GlobalPath                                      ;
+std::array<int,2>               GlobalRotate                                    ;
 FlagChange                      flagChangeIncrease  , flagChangeDecrease        ;
 HandleFlagChange                handleFlagChange    , handleFlagChangeDecrease  ;
 TextBrowser                     textBrowser                                     ;
@@ -37,6 +41,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->submitButton->setEnabled(false);
+    ui->clearButton->setEnabled(false);
+    ui->sendPathButton->setEnabled(false);
+
     qDebug("into main!");
 
     // PushButton list init
@@ -50,9 +58,11 @@ MainWindow::MainWindow(QWidget *parent)
     pushButMat_tracking.push_back({ui->matButton21_2, ui->matButton22_2, ui->matButton23_2, ui->matButton24_2});
     pushButMat_tracking.push_back({ui->matButton31_2, ui->matButton32_2, ui->matButton33_2, ui->matButton34_2});
 
+    DisableAllButton(pushButMat_setting, MatrixSample);
     /* AK-TASK IMPLEMENT */
     ak_init_tasks(AK_TASK_LIST_LEN, task_list_init);
     ak_start_task(TASK_APP_3);
+//    ak_start_task(TASK_APP_2);
 
     QObject::connect(&flagChangeIncrease, &FlagChange   ::signalIncreaseCounter     , &handleFlagChange         , &HandleFlagChange ::receiveSignalIncrease );
     QObject::connect(&flagChangeDecrease, &FlagChange   ::signalDecreaseCounter     , &handleFlagChangeDecrease , &HandleFlagChange ::receiveSignalDecrease );
@@ -75,22 +85,28 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void* task_app_capture_entry(void){
 //    wait_all_tasks_started();
-    textBrowser.emitTaskTextBrowser(Logger(INFO, QString::fromStdString(CAP_ENTRY)));
+    textBrowser.emitTaskTextBrowser(Logger(INFO_PUB, QString::fromStdString(CAP_ENTRY)));
     while(1) {
         ak_msg_t *msg;
         msg = ak_msg_rev(TASK_APP_3);
         QString insertText;
         switch(msg->header->sig){
-            case INFO:
+            case INFO_PUB:
                 insertText = QString::fromStdString((char*)(msg->header->payload));
-                textBrowser.emitTaskTextBrowser(Logger(INFO, insertText));
+                textBrowser.emitTaskTextBrowser(Logger(INFO_PUB, insertText));
                 break;
-            case WARNING:
+            case WARNING_PUB:
                 insertText = QString::fromStdString((char*)(msg->header->payload));
-                textBrowser.emitTaskTextBrowser(Logger(WARNING, insertText));
-            case DATA:
+                textBrowser.emitTaskTextBrowser(Logger(WARNING_PUB, insertText));
+            case DATA_PUB:
                 insertText = QString::fromStdString((char*)(msg->header->payload));
-                textBrowser.emitTaskTextBrowser(Logger(DATA, insertText));
+                textBrowser.emitTaskTextBrowser(Logger(DATA_PUB, insertText));
+            case INFO_SUB:
+
+
+            case WARNING_SUB:
+
+            case DATA_SUB:
             default:
                 break;
         }
@@ -112,22 +128,19 @@ void MainWindow::on_submitButton_clicked()
 
 
     AutoPath aPath;
+    aPath.Array = {0,0,0,0,0,0,0};
     aPath.Counter = 0;
 
     if (xBegin < xEnd){
         aPath.xDelta = INCR;
+        aPath.Rotate[0] = DEG180;
     } else if (xEnd < xBegin) {
         aPath.xDelta = DECR;
+        aPath.Rotate[0] = DEG0;
     } else if (xBegin == xEnd){
         aPath.xDelta = EQUA;
+        aPath.Rotate[0] = BREAK;
     }
-
-
-
-    qDebug() << "xBegin = " << xBegin;
-    qDebug() << "yBegin = " << yBegin;
-    qDebug() << "xEnd = "   << xEnd;
-    qDebug() << "yEnd = "   << yEnd;
 
     if (xBegin < xEnd)
     {
@@ -195,10 +208,25 @@ void MainWindow::on_submitButton_clicked()
                 aPath.Counter ++;
             }
         }
+    } else if (yBegin == yEnd){
+        aPath.yDelta = EQUA;
     }
-    aPath.Array[aPath.Counter] = BREAK;
-    PrintThePath(aPath.Array);
 
+    aPath.Array[aPath.Counter] = BREAK;
+    //PrintThePath(aPath.Array);
+
+
+    if (aPath.yDelta == INCR){
+        aPath.Rotate[1] = DEG90POS;
+    } else if (aPath.yDelta == DECR){
+        aPath.Rotate[1] = DEG90NEV;
+    } else {
+        aPath.Rotate[1] = BREAK;
+    }
+    GlobalPath      = aPath.Array;
+    GlobalRotate    = aPath.Rotate;
+    ui->clearButton->setEnabled(true);
+    ui->sendPathButton->setEnabled(true);
 }
 
 void MainWindow::update_taskTextBrowser(QString text){
@@ -216,16 +244,45 @@ void MainWindow::on_clearButton_clicked()
     EnableAllButton(pushButMat_setting);
     PrintTheMatrix(Matrix);
     PrintTheStorePoint(StorePoint);
+    ui->clearButton->setEnabled(false);
+    ui->sendPathButton->setEnabled(false);
 }
 
 void MainWindow::on_sendPathButton_clicked()
 {
-    char* test_msg = (char*)calloc(1, 50);
-    std::strcpy(test_msg, "Path submit");
-    task_post_dynamic_msg(TASK_APP_1, 0, (uint8_t*)test_msg, strlen(test_msg)+1);
-    free(test_msg);
+    //task_post_pure_msg(TASK_APP_1, PUBLISH_MSG);
+    //task_post_dynamic_msg(TASK_APP_1, PUBLISH_MSG,(uint8_t*)PING_TASK_2, strlen(PING_TASK_2)+1);
+    char buffer[18];
+    std::sprintf(buffer, "%d,%d,%d,%d,%d,%d,%d|%d,%d",
+                                                GlobalPath[0],
+                                                GlobalPath[1],
+                                                GlobalPath[2],
+                                                GlobalPath[3],
+                                                GlobalPath[4],
+                                                GlobalPath[5],
+                                                GlobalPath[6],
+                                                GlobalRotate[0],
+                                                GlobalRotate[1]);
+    qDebug() << buffer ;
+    task_post_dynamic_msg(TASK_APP_1, PUBLISH_MSG,(uint8_t*)buffer, strlen(buffer)+1);
 }
 
+void MainWindow::on_connectMqttButton_clicked()
+{
+    EnableAllButton(pushButMat_setting);
+    ak_start_task(TASK_APP_1);
+    ui->submitButton->setEnabled(true);
+    ui -> connectMqttButton->setEnabled(false);
+}
+
+
+void MainWindow::on_disconnectMqttButton_clicked()
+{
+    task_post_pure_msg(TASK_APP_1, STOP_TASK);
+    ui->submitButton->setEnabled(false);
+    ui -> connectMqttButton->setEnabled(true);
+    DisableAllButton(pushButMat_setting, MatrixSample);
+}
 
 
 void MainWindow::on_matButton01_clicked()
@@ -247,11 +304,15 @@ void MainWindow::on_matButton01_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({0, 0}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -277,11 +338,15 @@ void MainWindow::on_matButton11_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({1, 0}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -307,11 +372,15 @@ void MainWindow::on_matButton21_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({2, 0}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -337,11 +406,15 @@ void MainWindow::on_matButton31_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({3, 0}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -367,10 +440,14 @@ void MainWindow::on_matButton02_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({0, 1}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -396,11 +473,15 @@ void MainWindow::on_matButton12_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({1, 1}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -426,11 +507,15 @@ void MainWindow::on_matButton22_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({2, 1}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -456,11 +541,15 @@ void MainWindow::on_matButton32_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({3, 1}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -486,11 +575,15 @@ void MainWindow::on_matButton03_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({0, 2}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
     PrintTheMatrix(Matrix);
     PrintTheStorePoint(StorePoint);
@@ -515,11 +608,15 @@ void MainWindow::on_matButton13_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({1, 2}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -545,11 +642,15 @@ void MainWindow::on_matButton23_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({2, 2}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -575,11 +676,15 @@ void MainWindow::on_matButton33_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({3, 2}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -605,11 +710,15 @@ void MainWindow::on_matButton04_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({0, 3}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -635,11 +744,15 @@ void MainWindow::on_matButton14_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({1, 3}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -665,11 +778,15 @@ void MainWindow::on_matButton24_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({2, 3}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
@@ -695,28 +812,20 @@ void MainWindow::on_matButton34_clicked()
         EnableAllButton(pushButMat_setting);
         RemoveColorUnClickedButton(pushButMat_setting, Matrix);
         StorePoint.remove(StorePoint.indexOf({3, 3}));
+        ui->submitButton->setEnabled(false);
+        ui->clearButton->setEnabled(false);
+        ui->sendPathButton->setEnabled(false);
     }
 
     if (globalFlagCounter == 2)
     {
         DisableAllButton(pushButMat_setting, Matrix);
+        ui->submitButton->setEnabled(true);
     }
 
     PrintTheMatrix(Matrix);
     PrintTheStorePoint(StorePoint);
+
 }
 
-
-
-void MainWindow::on_connectMqttButton_clicked()
-{
-    ak_start_task(TASK_APP_1);
-}
-
-
-void MainWindow::on_disconnectMqttButton_clicked()
-{
-//    ak_stop_task(TASK_APP_1);
-    task_post_pure_msg(TASK_APP_1, 1);
-}
 

@@ -106,7 +106,7 @@ void RemoveColorAllButton(QVector<QVector<QPushButton *>> matrixButton){
     }
 }
 
-void PrintThePath(int *Path){
+void PrintThePath(std::array<int, 7> &Path){
     for (int i = 0; Path[i] != BREAK; i ++) {
         if (Path[i] == GO_AHEAD){
             qDebug() << "GO AHEAD";
@@ -120,6 +120,24 @@ void PrintThePath(int *Path){
     }
 }
 
+void PrintTheRotate(std::array<int, 2> &Rotate){
+    for (int i = 0; i < 2; i ++) {
+        if (Rotate[i] == DEG0){
+            qDebug() << "DEG0";
+        } else if (Rotate[i] == DEG90POS){
+            qDebug() << "DEG90POS";
+        }else if (Rotate[i] == DEG90NEV){
+            qDebug() << "DEG90NEV";
+        }
+        else if (Rotate[i] == DEG180){
+            qDebug() << "DEG180";
+        }
+        else if (Rotate[i] == BREAK){
+            qDebug() << "BREAK";
+        }
+    }
+}
+
 QString GetTheTimeStamp(){
     QTime currentTime = QTime::currentTime();
     return currentTime.toString(Qt::ISODateWithMs);
@@ -127,13 +145,13 @@ QString GetTheTimeStamp(){
 
 QString Logger(int caseLogger, QString info){
     switch (caseLogger) {
-    case INFO:
-        return QString::fromStdString(INFO_HTML)   + "[INFO_LOG]: "       + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
-    case WARNING:
-        return QString::fromStdString(ALERT_HTML)  + "[WARNING_LOG]: "    + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
-    case DATA:
-        return QString::fromStdString(DATA_HTML)   + "[DATA_LOG]: "       + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
+    case INFO_PUB:
+        return QString::fromStdString(INFO_HTML)   + "[INFO_LOG]:"      + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
+    case WARNING_PUB:
+        return QString::fromStdString(ALERT_HTML)  + "[WARN_LOG]:"      + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
+    case DATA_PUB:
+        return QString::fromStdString(DATA_HTML)   + "[DATA_LOG]:"      + GetTheTimeStamp() + "   " + info           + QString::fromStdString(END_HTML);
     default:
-        return QString::fromStdString(END_HTML)    + "[WARNING_LOG]: "    + GetTheTimeStamp() + "   " + "Logger fail!" + QString::fromStdString(END_HTML);
+        return QString::fromStdString(END_HTML)    + "[WARN_LOG]:"      + GetTheTimeStamp() + "   " + "Logger fail!" + QString::fromStdString(END_HTML);
     }
 }

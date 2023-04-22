@@ -40,7 +40,7 @@ DISTNAME      = mqtt-control1.0.0
 DISTDIR = /home/vienchau/Desktop/ths/Qr-Control/software/build-mqtt-control-Desktop-Debug/.tmp/mqtt-control1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath-link,/usr/lib/x86_64-linux-gnu
-LIBS          = $(SUBLIBS) -L/home/vienchau/build/local/lib/ -lmosquittopp -lak /usr/lib/x86_64-linux-gnu/libQt6Widgets.so /usr/lib/x86_64-linux-gnu/libQt6Gui.so /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so /usr/lib/x86_64-linux-gnu/libQt6Core.so -lpthread -lGLX -lOpenGL   
+LIBS          = $(SUBLIBS) -L/home/vienchau/build/local/lib/ -lmosquitto -lssl -lcrypto -lak /usr/lib/x86_64-linux-gnu/libQt6Widgets.so /usr/lib/x86_64-linux-gnu/libQt6Gui.so /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so /usr/lib/x86_64-linux-gnu/libQt6Core.so -lpthread -lGLX -lOpenGL   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -412,7 +412,16 @@ handleflagchange.o: ../mqtt-control/handleflagchange.cpp ../mqtt-control/handlef
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o handleflagchange.o ../mqtt-control/handleflagchange.cpp
 
 main.o: ../mqtt-control/main.cpp ../mqtt-control/mainwindow.h \
-		../mqtt-control/application_def.h
+		../mqtt-control/application_def.h \
+		../mqtt-control/multitask.h \
+		/home/vienchau/build/local/include/ak/ak.h \
+		/home/vienchau/build/local/include/ak/message.h \
+		/home/vienchau/build/local/include/ak/timer.h \
+		/home/vienchau/build/local/include/ak/port.h \
+		/home/vienchau/build/local/include/ak/ak_dbg.h \
+		../mqtt-control/subscribe_task.h \
+		../mqtt-control/publish_task.h \
+		../mqtt-control/capture_task.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../mqtt-control/main.cpp
 
 mainwindow.o: ../mqtt-control/mainwindow.cpp ../mqtt-control/mainwindow.h \
@@ -420,16 +429,16 @@ mainwindow.o: ../mqtt-control/mainwindow.cpp ../mqtt-control/mainwindow.h \
 		../mqtt-control/flagChange.h \
 		../mqtt-control/handleflagchange.h \
 		../mqtt-control/application_def.h \
-		/home/vienchau/build/local/include/mosquitto.h \
+		../mqtt-control/multitask.h \
 		/home/vienchau/build/local/include/ak/ak.h \
 		/home/vienchau/build/local/include/ak/message.h \
 		/home/vienchau/build/local/include/ak/timer.h \
 		/home/vienchau/build/local/include/ak/port.h \
 		/home/vienchau/build/local/include/ak/ak_dbg.h \
-		../mqtt-control/multitask.h \
 		../mqtt-control/subscribe_task.h \
 		../mqtt-control/publish_task.h \
 		../mqtt-control/capture_task.h \
+		/home/vienchau/build/local/include/mosquitto.h \
 		../mqtt-control/text_browser.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../mqtt-control/mainwindow.cpp
 
@@ -471,7 +480,16 @@ subscribe_task.o: ../mqtt-control/subscribe_task.cpp ../mqtt-control/subscribe_t
 text_browser.o: ../mqtt-control/text_browser.cpp ../mqtt-control/text_browser.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o text_browser.o ../mqtt-control/text_browser.cpp
 
-utils.o: ../mqtt-control/utils.cpp ../mqtt-control/application_def.h
+utils.o: ../mqtt-control/utils.cpp ../mqtt-control/application_def.h \
+		../mqtt-control/multitask.h \
+		/home/vienchau/build/local/include/ak/ak.h \
+		/home/vienchau/build/local/include/ak/message.h \
+		/home/vienchau/build/local/include/ak/timer.h \
+		/home/vienchau/build/local/include/ak/port.h \
+		/home/vienchau/build/local/include/ak/ak_dbg.h \
+		../mqtt-control/subscribe_task.h \
+		../mqtt-control/publish_task.h \
+		../mqtt-control/capture_task.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o utils.o ../mqtt-control/utils.cpp
 
 moc_flagChange.o: moc_flagChange.cpp 
