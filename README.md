@@ -46,7 +46,8 @@
 
 <div align=center>
 
-![Framework_trans.png](image%2FFramework_trans.png)
+![Framework.png](image%2FFramework.png)
+
 </div>
 
 
