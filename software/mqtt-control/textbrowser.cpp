@@ -1,4 +1,4 @@
-#include "text_browser.h"
+#include "textbrowser.h"
 
 TextBrowser::TextBrowser()
 {

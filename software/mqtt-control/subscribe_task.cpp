@@ -11,7 +11,19 @@ void on_message(struct mosquitto *mosq, void *obj, const struct mosquitto_messag
     char *content = (char *)calloc(1, msg->payloadlen + 1);
     memcpy(content, (char *)msg->payload, msg->payloadlen);
     content[msg->payloadlen] = '\0';
+    char datatype[50], payload[50];
     task_post_dynamic_msg(TASK_APP_3, DATA_SUB, (uint8_t*)content, strlen(content)+1);
+//    sscanf(content, "%49[^|]%*[|] %[^,]%*[,]%[^,]", datatype, row, column);
+
+    sscanf(content, "%49[^|]%*[|]%49[^\n]", datatype, payload);
+
+    if(!strcmp(datatype, DATA_MESS)){
+//        sscanf(payload, "%[^,]%*[,]%s", row, column);
+//        qDebug() << "DATATYPE: " << datatype;
+//        qDebug() << "ROW: " << row;
+//        qDebug() << "COLUMN: " << column;
+        task_post_dynamic_msg(TASK_APP_3, MATRIX_SUB, (uint8_t*)payload, strlen(payload)+1);
+    }
     free(content);
 }
 

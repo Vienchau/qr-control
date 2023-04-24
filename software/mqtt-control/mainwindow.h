@@ -57,6 +57,8 @@ private slots:
 
     void update_feedBackTextBrowser(QString text);
 
+    void update_matrixTracking(int direct, int row, int column);
+
     void on_connectMqttButton_clicked();
 
     void on_disconnectMqttButton_clicked();

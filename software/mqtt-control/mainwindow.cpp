@@ -6,15 +6,16 @@
 #include "mosquitto.h"
 #include "ak/ak.h"
 #include "multitask.h"
-#include "text_browser.h"
+#include "textbrowser.h"
+#include "matrixtracking.h"
 
 #include <QString>
 #include <QPalette>
 #include <QList>
 #include <QVector>
 #include <QThread>
-#include <QCloseEvent>
-#include <QScrollBar>
+    #include <QCloseEvent>
+    #include <QScrollBar>
 
 // Global flag definition
 int                             globalFlagCounter   = 0;
@@ -22,7 +23,7 @@ int                             Matrix[4][4]        = {     {0, 0, 0, 0}    ,
                                                             {0, 0, 0, 0}    ,
                                                             {0, 0, 0, 0}    ,
                                                             {0, 0, 0, 0}    }   ;
-int                             MatrixSample[4][4]        = {     {0, 0, 0, 0}    ,
+int                             MatrixSample[4][4]  = {     {0, 0, 0, 0}    ,
                                                             {0, 0, 0, 0}    ,
                                                             {0, 0, 0, 0}    ,
                                                             {0, 0, 0, 0}    }   ;
@@ -31,6 +32,7 @@ std::array<int,2>               GlobalRotate                                    
 FlagChange                      flagChangeIncrease  , flagChangeDecrease        ;
 HandleFlagChange                handleFlagChange    , handleFlagChangeDecrease  ;
 TextBrowser                     textBrowser                                     ;
+MatrixTracking                  matrixTracking                                  ;
 
 QVector<QVector<QPushButton *>> pushButMat_setting  , pushButMat_tracking       ;
 QVector<QVector<int>>           StorePoint                                      ;
@@ -62,10 +64,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    QObject::connect(&flagChangeIncrease, &FlagChange   ::signalIncreaseCounter     , &handleFlagChange         , &HandleFlagChange ::receiveSignalIncrease     );
-    QObject::connect(&flagChangeDecrease, &FlagChange   ::signalDecreaseCounter     , &handleFlagChangeDecrease , &HandleFlagChange ::receiveSignalDecrease     );
-    QObject::connect(&textBrowser       , &TextBrowser  ::signalTaskTextBrowser     , this                      , &MainWindow       ::update_taskTextBrowser    );
-    QObject::connect(&textBrowser       , &TextBrowser  ::signalFeeadBackTextBrowser, this                      , &MainWindow       ::update_feedBackTextBrowser);
+
+    QObject::connect(&flagChangeIncrease, &FlagChange       ::signalIncreaseCounter     , &handleFlagChange         , &HandleFlagChange ::receiveSignalIncrease     );
+    QObject::connect(&flagChangeDecrease, &FlagChange       ::signalDecreaseCounter     , &handleFlagChangeDecrease , &HandleFlagChange ::receiveSignalDecrease     );
+    QObject::connect(&textBrowser       , &TextBrowser      ::signalTaskTextBrowser     , this                      , &MainWindow       ::update_taskTextBrowser    );
+    QObject::connect(&textBrowser       , &TextBrowser      ::signalFeeadBackTextBrowser, this                      , &MainWindow       ::update_feedBackTextBrowser);
+    QObject::connect(&matrixTracking    , &MatrixTracking   ::signalMatrixUpdate        , this                      , &MainWindow       :: update_matrixTracking    );
 }
 
 
@@ -120,6 +124,11 @@ void* task_app_capture_entry(void){
             case DATA_SUB:
                 insertText = QString::fromStdString((char*)(msg->header->payload));
                 textBrowser.emitFeedbackTextBrowser(Logger(DATA_SUB, insertText));
+                break;
+            case MATRIX_SUB:
+                char row[2], column[2], direct[2];
+                sscanf((char*)msg->header->payload, "%[^,]%*[,]%[^,]%*[,]%s",direct, row, column);
+                matrixTracking.emitMatrixUpdate(atoi(direct), atoi(row), atoi(column));
                 break;
             default:
                 break;
@@ -255,6 +264,20 @@ void MainWindow::update_feedBackTextBrowser(QString text){
     sb->setValue(sb->maximum());
 }
 
+void MainWindow::update_matrixTracking(int direct, int row, int column)
+{
+    if(direct == 1) {
+        qDebug() << "Row: " << row;
+        qDebug() << "Col: " << column;
+        SetRedPushButton(pushButMat_tracking.at(row).at(column));
+    } else if (direct == 0){
+        qDebug() << "Row: " << row;
+        qDebug() << "Col: " << column;
+        SetBluePushButton(pushButMat_tracking.at(row).at(column));
+    }
+
+}
+
 
 void MainWindow::on_clearButton_clicked()
 {
@@ -303,7 +326,7 @@ void MainWindow::on_connectMqttButton_clicked()
 
     EnableAllButton(pushButMat_setting);
     ui->submitButton->setEnabled(true);
-    ui -> connectMqttButton->setEnabled(false);
+    ui->connectMqttButton->setEnabled(false);
     ui->agvSelectComboBox->setEnabled(false);
     ui->radioAuto ->setEnabled(false);
     ui->radioManual->setEnabled(false);
@@ -321,6 +344,11 @@ void MainWindow::on_disconnectMqttButton_clicked()
     ui->agvSelectComboBox->setEnabled(true);
     ui->radioAuto ->setEnabled(true);
     ui->radioManual->setEnabled(true);
+    ui->clearButton->setEnabled(false);
+    ui->sendPathButton->setEnabled(false);
+
+    RemoveColorAllButton(pushButMat_setting);
+    RemoveColorAllButton(pushButMat_tracking);
     DisableAllButton(pushButMat_setting, MatrixSample);
 }
 

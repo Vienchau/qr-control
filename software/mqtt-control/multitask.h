@@ -36,10 +36,11 @@
 #define     INFO_SUB                    0x03
 #define     WARNING_SUB                 0x04
 #define     DATA_SUB                    0x05
-#define     INFO                        0x06
-#define     WARING                      0x07
-#define     DATA                        0x08
-#define     NOTHING                     0x09
+#define     MATRIX_SUB                  0x06
+#define     INFO                        0x07
+#define     WARING                      0x08
+#define     DATA                        0x09
+#define     NOTHING                     0x10
 
 //Signal type (only for capture task to push cmd)
 #define     STOP_TASK                   0x03
@@ -53,6 +54,9 @@
 #define     PORT                        1883
 #define     TOPIC_CONTROL               "AGV/Controller_AGV01/Command"
 #define     TOPIC_FEEDBACK              "AGV/Client_AGV01/Feedback"
+#define     WARN_MESS                   "WARN"
+#define     DATA_MESS                   "DATA"
+
 
 enum{
     DEFAULT_AT_FIRST_TASK = AK_TASK_TIMER_ID,

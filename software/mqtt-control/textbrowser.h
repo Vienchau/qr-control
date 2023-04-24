@@ -1,5 +1,5 @@
-#ifndef TEXT_BROWSER_H
-#define TEXT_BROWSER_H
+#ifndef TEXTBROWSER_H
+#define TEXTBROWSER_H
 
 #include <QObject>
 #include <QString>
@@ -18,4 +18,4 @@ signals:
     void signalFeeadBackTextBrowser(QString text);
 };
 
-#endif // TEXT_BROWSER_H
+#endif // TEXTBROWSER_H

@@ -13,10 +13,11 @@ SOURCES += \
     handleflagchange.cpp \
     main.cpp \
     mainwindow.cpp \
+    matrixtracking.cpp \
     multitask.cpp \
     publish_task.cpp \
     subscribe_task.cpp \
-    text_browser.cpp \
+    textbrowser.cpp \
     utils.cpp
 
 HEADERS += \
@@ -25,10 +26,11 @@ HEADERS += \
     flagChange.h \
     handleflagchange.h \
     mainwindow.h \
+    matrixtracking.h \
     multitask.h \
     publish_task.h \
     subscribe_task.h \
-    text_browser.h
+    textbrowser.h
 
 FORMS += \
     mainwindow.ui
