@@ -110,6 +110,20 @@
 
 
 ### QT GUI ARCHITECHTURE
+> Besides 1 main thread (MainWindow UI), this GUI application also has 3 sub-threads responsible for MQTT communication and capturing notification.
+<div align=center>
 
+![gui_multitask.png](image%2Fgui_multitask.png)
+
+</div>
+
+- UI init with capture task. This task is responsible for capturing messages from all tasks, including MQTT messages from the subscribe task, and pub/sub task statuses. Capture serves as the bridge between the main application and the two lower tasks. The main application sends a signal/command to the capture task, which then forwards the message to the lower tasks.
+- Publish task has three cases:
+    - `PUBLISH_SIG`: publishing a message to the broker.
+    - `SET_TOPIC_SIG`: setting the topic to publish.
+    - `STOP_TASK`: killing this task when the disconnect button is clicked.
+- Subscribe task has two cases:
+    - `SUBSCRIBE_SIG`: starting to subscribe to the topic and beginning to loop.
+    - `STOP_TASK`: unsubscribing from the topic, then disconnecting from the broker and stopping the loop thread forcefully. 
 
 ### PYTHON IMAGE PROCESSING ARCHTECHTURE
