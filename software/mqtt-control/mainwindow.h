@@ -66,6 +66,8 @@ private slots:
 
 //    void on_agvSelectComboBox_currentIndexChanged(int index);
 
+    void on_velocityPushButton_clicked();
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 

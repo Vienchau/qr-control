@@ -20,12 +20,25 @@
 #define DEG180      3
 //#define DEGNONE     4
 
-#define ALERT_HTML  "<font color=\"#ff1a1a\">"
-#define DATA_HTML   "<font color=\"#008040\">"
-#define INFO_HTML   "<font color=\"#0040ff\">"
-#define END_HTML    "</font><br>"
+#define ALERT_HTML      "<font color=\"#ff1a1a\">"
+#define DATA_HTML       "<font color=\"#008040\">"
+#define INFO_HTML       "<font color=\"#0040ff\">"
+#define END_HTML        "</font><br>"
 
+// JSON object defines
+#define METHOD              "method"
+#define PAYLOAD             "payload"
+#define PATH                "path"
+#define VELOCITY            "velocity"
 
+// JSON Contanst defines
+#define MED_PROCESS_LIST    "PROCESS_LIST"
+#define MED_COMMAND         "COMMAND"
+#define MED_STATUS          "STATUS"
+#define MED_WARNING         "WARNING"
+
+#define TOTAL_COL           4
+#define TOTAL_ROW           4
 
 
 #include <QPushButton>

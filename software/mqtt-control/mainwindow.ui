@@ -1545,25 +1545,44 @@
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
-    <widget class="QPushButton" name="pushButton">
+    <widget class="QPushButton" name="emergencyPushButton">
      <property name="geometry">
       <rect>
        <x>20</x>
        <y>290</y>
-       <width>181</width>
+       <width>381</width>
        <height>51</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>11</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
+       <pointsize>-1</pointsize>
+       <weight>75</weight>
+       <italic>false</italic>
+       <bold>true</bold>
        <kerning>false</kerning>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton{
+	background:rgb(246, 97, 81);
+	color: rgb(0, 0, 0);
+	font: bold 14px;	
+}
+
+QPushButton:flat {
+    border: none; /* no border for a flat push button */
+}
+
+QPushButton::pressed{
+	background:rgb(237, 51, 59);
+	color: rgb(0, 0, 0);
+	font: bold 14px;	
+}
+</string>
+     </property>
      <property name="text">
-      <string>Reset STM32</string>
+      <string>EMERGENCY STOP</string>
      </property>
     </widget>
     <widget class="QComboBox" name="agvSelectComboBox">
@@ -1605,49 +1624,7 @@
       <string>AGV selection</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
-     <property name="geometry">
-      <rect>
-       <x>220</x>
-       <y>290</y>
-       <width>181</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <kerning>false</kerning>
-      </font>
-     </property>
-     <property name="text">
-      <string>Reset Pi</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_3">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>360</y>
-       <width>381</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <kerning>false</kerning>
-      </font>
-     </property>
-     <property name="text">
-      <string>START</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_4">
+    <widget class="QPushButton" name="velocityPushButton">
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -1664,8 +1641,11 @@
        <kerning>false</kerning>
       </font>
      </property>
+     <property name="styleSheet">
+      <string notr="true"/>
+     </property>
      <property name="text">
-      <string>STOP</string>
+      <string>Set Velocity</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_2">
@@ -1687,27 +1667,6 @@
      </property>
      <property name="text">
       <string>Operation</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_5">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>480</y>
-       <width>381</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-       <weight>50</weight>
-       <bold>false</bold>
-       <kerning>false</kerning>
-      </font>
-     </property>
-     <property name="text">
-      <string>RETURN TO BEGIN</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_4">
@@ -1777,9 +1736,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>530</y>
+       <y>480</y>
        <width>381</width>
-       <height>181</height>
+       <height>231</height>
       </rect>
      </property>
      <property name="font">
@@ -1802,7 +1761,7 @@
         <x>20</x>
         <y>40</y>
         <width>341</width>
-        <height>131</height>
+        <height>171</height>
        </rect>
       </property>
      </widget>
@@ -1869,6 +1828,60 @@
        <string>Auto Generate</string>
       </property>
      </widget>
+    </widget>
+    <widget class="QComboBox" name="velocityComboBox">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>380</y>
+       <width>381</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <item>
+      <property name="text">
+       <string>low</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>normal</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>high</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>360</y>
+       <width>141</width>
+       <height>17</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>11</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+       <kerning>false</kerning>
+      </font>
+     </property>
+     <property name="text">
+      <string>Velocity</string>
+     </property>
     </widget>
    </widget>
    <widget class="QPushButton" name="submitButton">

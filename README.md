@@ -32,13 +32,14 @@
 │       │   └── Legacy
 │       └── Src
 ├── icon
+├── image
 └── software
     ├── build-mqtt-control-Desktop-Debug
     ├── mqtt-control
     ├── sofware-client
     └── sofware-client-old
 
-30 directories
+31 directories
 ```
 
 ### MQTT Protocol
@@ -51,28 +52,23 @@
 </div>
 
 
-#### Client publish message framework
+#### GUI publish message framework
 - GUI message frame: Message has 2 keys which are `Method` and `Payload`.
 - Method key includes 3 type:
 
 | method            |  describe                  | 
 |---                |---                         |
 | `PROCESS_LIST`    |Sending AGV's path          |      
-| `VELOCITY_SET`    |Sending Velocity            |
 | `COMMAND`         |Sending command to excute   |  
 
 - `PROCESS_LIST`:
 ```json
 {
     "method": "PROCESS_LIST",
-    "payload":"6,6,7,6,6,4,0|0,2"
-}
-```
-- `VELOCITY_SET`:
-```json
-{
-    "method": "VELOCITY_SET",
-    "payload":"max" // max|normal|slow
+    "payload":{
+        "path":"6,6,7,6,6,4,0|0,2",
+        "velocity":"high", //high, normal, low
+    }
 }
 ```
 - `COMMAND`:
@@ -82,7 +78,7 @@
     "payload":"reset_pi" // reset_pi|reset_stm32|excute command...
 }
 ```
-#### GUI publish message framework
+#### AGV publish message framework
 
 - GUI message frame: Message has 2 keys which are `Method` and `Payload`.
 - Method key includes 3 type:

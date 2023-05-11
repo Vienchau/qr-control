@@ -41,6 +41,7 @@ LIBS += -lmosquitto
 LIBS += -lssl
 LIBS += -lcrypto
 LIBS += -lak
+LIBS += -ljansson
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
