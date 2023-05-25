@@ -18,7 +18,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QRadioButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QWidget>
@@ -78,9 +77,6 @@ public:
     QPushButton *disconnectMqttButton;
     QGroupBox *groupBox_6;
     QTextBrowser *textBrowser_3;
-    QGroupBox *groupBox_7;
-    QRadioButton *radioManual;
-    QRadioButton *radioAuto;
     QComboBox *velocityComboBox;
     QLabel *label_3;
     QPushButton *submitButton;
@@ -618,7 +614,7 @@ public:
         groupBox_5->setAlignment(Qt::AlignCenter);
         emergencyPushButton = new QPushButton(groupBox_5);
         emergencyPushButton->setObjectName(QString::fromUtf8("emergencyPushButton"));
-        emergencyPushButton->setGeometry(QRect(20, 290, 381, 51));
+        emergencyPushButton->setGeometry(QRect(20, 200, 381, 51));
         QFont font4;
         font4.setBold(true);
         font4.setItalic(false);
@@ -654,7 +650,7 @@ public:
         label->setFont(font5);
         velocityPushButton = new QPushButton(groupBox_5);
         velocityPushButton->setObjectName(QString::fromUtf8("velocityPushButton"));
-        velocityPushButton->setGeometry(QRect(20, 420, 381, 51));
+        velocityPushButton->setGeometry(QRect(20, 330, 381, 51));
         QFont font6;
         font6.setPointSize(11);
         font6.setBold(false);
@@ -663,23 +659,23 @@ public:
         velocityPushButton->setStyleSheet(QString::fromUtf8(""));
         label_2 = new QLabel(groupBox_5);
         label_2->setObjectName(QString::fromUtf8("label_2"));
-        label_2->setGeometry(QRect(20, 270, 141, 17));
+        label_2->setGeometry(QRect(20, 180, 141, 17));
         label_2->setFont(font5);
         label_4 = new QLabel(groupBox_5);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(20, 190, 141, 17));
+        label_4->setGeometry(QRect(20, 100, 141, 17));
         label_4->setFont(font5);
         connectMqttButton = new QPushButton(groupBox_5);
         connectMqttButton->setObjectName(QString::fromUtf8("connectMqttButton"));
-        connectMqttButton->setGeometry(QRect(20, 210, 181, 51));
+        connectMqttButton->setGeometry(QRect(20, 120, 181, 51));
         connectMqttButton->setFont(font6);
         disconnectMqttButton = new QPushButton(groupBox_5);
         disconnectMqttButton->setObjectName(QString::fromUtf8("disconnectMqttButton"));
-        disconnectMqttButton->setGeometry(QRect(220, 210, 181, 51));
+        disconnectMqttButton->setGeometry(QRect(220, 120, 181, 51));
         disconnectMqttButton->setFont(font6);
         groupBox_6 = new QGroupBox(groupBox_5);
         groupBox_6->setObjectName(QString::fromUtf8("groupBox_6"));
-        groupBox_6->setGeometry(QRect(20, 480, 381, 231));
+        groupBox_6->setGeometry(QRect(20, 390, 381, 321));
         QFont font7;
         font7.setPointSize(13);
         font7.setBold(true);
@@ -688,29 +684,17 @@ public:
         groupBox_6->setAlignment(Qt::AlignCenter);
         textBrowser_3 = new QTextBrowser(groupBox_6);
         textBrowser_3->setObjectName(QString::fromUtf8("textBrowser_3"));
-        textBrowser_3->setGeometry(QRect(20, 40, 341, 171));
-        groupBox_7 = new QGroupBox(groupBox_5);
-        groupBox_7->setObjectName(QString::fromUtf8("groupBox_7"));
-        groupBox_7->setGeometry(QRect(20, 100, 381, 80));
-        groupBox_7->setFont(font5);
-        radioManual = new QRadioButton(groupBox_7);
-        radioManual->setObjectName(QString::fromUtf8("radioManual"));
-        radioManual->setGeometry(QRect(240, 40, 112, 23));
-        radioManual->setFont(font6);
-        radioAuto = new QRadioButton(groupBox_7);
-        radioAuto->setObjectName(QString::fromUtf8("radioAuto"));
-        radioAuto->setGeometry(QRect(50, 40, 131, 23));
-        radioAuto->setFont(font6);
+        textBrowser_3->setGeometry(QRect(20, 40, 341, 261));
         velocityComboBox = new QComboBox(groupBox_5);
         velocityComboBox->addItem(QString());
         velocityComboBox->addItem(QString());
         velocityComboBox->addItem(QString());
         velocityComboBox->setObjectName(QString::fromUtf8("velocityComboBox"));
-        velocityComboBox->setGeometry(QRect(20, 380, 381, 25));
+        velocityComboBox->setGeometry(QRect(20, 290, 381, 25));
         velocityComboBox->setFont(font5);
         label_3 = new QLabel(groupBox_5);
         label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(20, 360, 141, 17));
+        label_3->setGeometry(QRect(20, 270, 141, 17));
         label_3->setFont(font5);
         submitButton = new QPushButton(centralwidget);
         submitButton->setObjectName(QString::fromUtf8("submitButton"));
@@ -783,9 +767,6 @@ public:
         connectMqttButton->setText(QCoreApplication::translate("MainWindow", "Connect", nullptr));
         disconnectMqttButton->setText(QCoreApplication::translate("MainWindow", "Disconnect", nullptr));
         groupBox_6->setTitle(QCoreApplication::translate("MainWindow", "Status Output Log", nullptr));
-        groupBox_7->setTitle(QCoreApplication::translate("MainWindow", "Path Selection", nullptr));
-        radioManual->setText(QCoreApplication::translate("MainWindow", "Manual Set", nullptr));
-        radioAuto->setText(QCoreApplication::translate("MainWindow", "Auto Generate", nullptr));
         velocityComboBox->setItemText(0, QCoreApplication::translate("MainWindow", "low", nullptr));
         velocityComboBox->setItemText(1, QCoreApplication::translate("MainWindow", "normal", nullptr));
         velocityComboBox->setItemText(2, QCoreApplication::translate("MainWindow", "high", nullptr));

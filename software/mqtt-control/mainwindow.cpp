@@ -93,7 +93,6 @@ void MainWindow::ui_Init() {
     ui->clearButton         ->setEnabled(false);
     ui->sendPathButton      ->setEnabled(false);
     ui->emergencyPushButton ->setEnabled(false);
-    ui->radioAuto           ->setChecked(true);
 
     ui->agvSelectComboBox   ->addItems({"AGV_01", "AGV_02", "AGV_03"});
     ui->agvSelectComboBox   ->setCurrentIndex(0);
@@ -373,8 +372,6 @@ void MainWindow::on_connectMqttButton_clicked()
     ui->emergencyPushButton ->setEnabled(true);
     ui->connectMqttButton->setEnabled(false);
     ui->agvSelectComboBox->setEnabled(false);
-    ui->radioAuto ->setEnabled(false);
-    ui->radioManual->setEnabled(false);
 
 }
 
@@ -388,8 +385,6 @@ void MainWindow::on_disconnectMqttButton_clicked()
     ui -> velocityPushButton -> setEnabled(false);
     ui -> connectMqttButton->setEnabled(true);
     ui->agvSelectComboBox->setEnabled(true);
-    ui->radioAuto ->setEnabled(true);
-    ui->radioManual->setEnabled(true);
     ui->clearButton->setEnabled(false);
     ui->emergencyPushButton ->setEnabled(false);
     ui->sendPathButton->setEnabled(false);
