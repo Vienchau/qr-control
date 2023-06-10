@@ -131,6 +131,8 @@
 </div>
 
 #### Calib process: 
-Frames from Camera             |  Image processing with Optical Flow algorithm
-:-------------------------:|:-------------------------:
-![calib_video.gif](video%2Fcalib_video.gif)  | ![image_processing.gif](video%2Fimage_processing.gif)
++ Frames from Camera            
+![calib_video.gif](video%2Fcalib_video.gif)  
+
++ Image processing with Optical Flow algorithm
+![image_processing.gif](video%2Fimage_processing.gif)
