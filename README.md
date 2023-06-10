@@ -123,3 +123,14 @@
     - `STOP_TASK`: unsubscribing from the topic, then disconnecting from the broker and stopping the loop thread forcefully. 
 
 ### PYTHON IMAGE PROCESSING ARCHTECHTURE
+#### Calibrate algorithm: 
+<div align=center>
+
+![calib_algorithm.jpg](image%2Fcalib_algorithm.jpg)
+
+</div>
+
+#### Calib process: 
+Frames from Camera             |  Image processing with Optical Flow algorithm
+:-------------------------:|:-------------------------:
+![calib_video.gif](video%2Fcalib_video.gif)  | ![image_processing.gif](video%2Fimage_processing.gif)
