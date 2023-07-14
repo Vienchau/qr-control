@@ -1,3 +1,9 @@
 .vscode 
 .metadata
 .settings
+.idea
+.cproject
+.mxproject
+Qr-Control Debug.launch
+STM32F407VGTX_FLASH.ld
+STM32F407VGTX_RAM.ld

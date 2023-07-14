@@ -83,8 +83,8 @@
 
 | method            |  describe                                | 
 |---                |---                                       |
-| `STATUS`          |Sending present status                    |      
-| `WARNING`         |Sending warning whe agv get into problem  |
+| `STATUS`          |Sending present  |
+
 
 
 - `STATUS`:
@@ -94,13 +94,7 @@
     "payload":"1,2,2" //"direction (1 for go ahead, 0 for go back),row,column"
 }
 ```
-- `WARNING`:
-```json
-{
-    "method": "WARNING",
-    "payload":"00" //warning code
-}
-```
+
 
 
 ### QT GUI ARCHITECHTURE
