@@ -11,21 +11,12 @@
 │   ├── Inc
 │   ├── Src
 │   └── Startup
-├── Debug
-│   ├── Core
-│   │   ├── Src
-│   │   └── Startup
-│   └── Drivers
-│       └── STM32F4xx_HAL_Driver
-│           └── Src
 ├── Drivers
 │   ├── CMSIS
 │   │   ├── Device
 │   │   │   └── ST
 │   │   │       └── STM32F4xx
-│   │   │           ├── Include
-│   │   │           └── Source
-│   │   │               └── Templates
+│   │   │           └── Include
 │   │   └── Include
 │   └── STM32F4xx_HAL_Driver
 │       ├── Inc
@@ -33,13 +24,20 @@
 │       └── Src
 ├── icon
 ├── image
-└── software
-    ├── build-mqtt-control-Desktop-Debug
-    ├── mqtt-control
-    ├── sofware-client
-    └── sofware-client-old
+├── lib
+│   ├── include
+│   │   ├── ak
+│   │   └── openssl
+│   └── lib
+│       ├── engines-1.1
+│       └── pkgconfig
+├── software
+│   ├── mqtt-control
+│   ├── sofware-client
+│   └── sofware-client-old
+└── video
 
-31 directories
+30 directories
 ```
 
 ### MQTT Protocol
