@@ -1,3 +1,0 @@
-../Core/Src/utils.c:15:10:ConvertDegToPulse	24	static
-../Core/Src/utils.c:21:10:ConvertPulseToDeg	24	static
-../Core/Src/utils.c:27:11:ArrProcess	72	static
